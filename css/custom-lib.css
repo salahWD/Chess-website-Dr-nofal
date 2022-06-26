@@ -1,0 +1,258 @@
+/*
+=================================
+- this is salah's custom lib
+- version: 1.0
+- instagram: https://instagram.com/salahbackhash
+=================================
+*/
+
+/* === start global variables === */
+:root {
+  --animation-duration: 1.25s;
+}
+/* === end global variables === */
+
+/* === start container === */
+.container,
+.container-fluid,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+  width: 100%;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container-sm, .container {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .container-md, .container-sm, .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container-lg, .container-md, .container-sm, .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .container-xl, .container-lg, .container-md, .container-sm, .container {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+    max-width: 1280px;
+  }
+}
+/* === end container === */
+
+/* === start btns === */
+.btn:not(:disabled):not(.disabled) {
+  cursor: pointer;
+}
+[type=reset], [type=submit], button, html [type=button] {
+  -webkit-appearance: button;
+}
+.btn {
+  font-family: var(--global-font-sec);
+  display: inline-block;
+  font-weight: 600;
+  text-transform: capitalize;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 15px 30px;
+  font-size: 1rem;
+  line-height: 1.5;
+  cursor: pointer;
+  border-radius: 0;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  text-decoration: none;
+}
+.btn-big {
+  padding: 20px 40px;
+}
+.btn, .btn:focus, .btn:active {
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.btn-warning {
+  background-color: var(--global-color-primary);
+  color: var(--global-color-black);
+}
+.btn-warning:hover,
+.btn-warning:focus {
+  color: #000;
+  background-color: #ffca2c;
+  border-color: #ffc720;
+}
+.btn-warning:focus {
+  box-shadow: 0 0 0 0.25rem rgba(217, 164, 6, 0.5);
+}
+.btn-transparent {
+  color: var(--global-color-white);
+  background-color: transparent;
+}
+.btn-transparent:hover {
+  color: var(--global-color-primary);
+}
+/* === start btns === */
+
+/* === start global class === */
+.text-center {
+  text-align: center !important;
+}
+.m-0 {
+  margin: 0;
+}
+.mb-1 {
+  margin-bottom: 16px;
+}
+.list-unstyled {
+  margin: 0;
+  padding: 0;
+  padding-right:0;
+  list-style:none;
+}
+.upper {
+  text-transform: uppercase;
+}
+.cap {
+  text-transform: capitalize;
+}
+.opacity-0 {
+  opacity: 0;
+}
+.w-100 {
+  width: 100%;
+}
+/* === end global class === */
+
+/* === start utilities === */
+.overlay {
+  background: #333;
+  transition: background 0.3s, border-radius 0.3s, opacity 0.3s;
+  opacity: 0.6;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+/* === end utilities === */
+
+/* === start animations === */
+.animate__animated {
+  animation-duration: var(--animation-duration);
+  opacity: 0;
+}
+.animate__delay-01 {
+  animation-delay: 0.1s;
+}
+.animate__delay-02 {
+  animation-delay: 0.2s;
+}
+.animate__delay-03 {
+  animation-delay: 0.3s;
+}
+.animate__delay-04 {
+  animation-delay: 0.4s;
+}
+.animate__delay-05 {
+  animation-delay: 0.5s;
+}
+.animate__delay-06 {
+  animation-delay: 0.6s;
+}
+.animate__delay-08 {
+  animation-delay: 0.8s;
+}
+.animate__delay-09 {
+  animation-delay: 0.9s;
+}
+.animate__delay-1 {
+  animation-delay: 1s;
+}
+.animate__delay-2 {
+  animation-delay: 2s;
+}
+.animate__delay-3 {
+  animation-delay: 3s;
+}
+.animate__delay-4 {
+  animation-delay: 4s;
+}
+.animate__fadeInLeft {
+  animation-name: fadeInLeft;
+}
+.animate__fadeInRight {
+  animation-name: fadeInRight;
+}
+.animate__fadeInUp {
+  animation-name: fadeInUp;
+}
+.animate__fadeInDown {
+  animation-name: fadeInDown;
+}
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%,0,0);
+    transform: translate3d(-100%,0,0)
+  }to {
+    opacity:1;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+  }
+}
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(100%,0,0);
+    transform: translate3d(100%,0,0)
+  }to {
+    opacity:1;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+  }
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0,-100%,0);
+    transform: translate3d(0,-100%,0)
+  }to {
+    opacity:1;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+  }
+}
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0,100%,0);
+    transform: translate3d(0,100%,0)
+  }to {
+    opacity:1;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+  }
+}
+/* === end animations === */
