@@ -1,5 +1,7 @@
 section.header {
   padding: 220px 0px 150px 0px;
+}section.header::before {
+  all: unset;
 }
 section.header .overlay {
   z-index: 1;

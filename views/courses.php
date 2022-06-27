@@ -9,7 +9,7 @@
       <h2 class="title cap">Courses</h2>
       <ul class="path list-unstyled">
         <li class="page">home</li>
-        <li class="page">about</li>
+        <li class="page">courses</li>
       </ul>
     </div>
   </div>
@@ -57,7 +57,7 @@
                   <i class="fa-solid fa-star-half"></i>
                 </div>
               </div>
-              <a href="<?php echo MASTER_URL . "courses/$course->id";?>" class="btn btn-warning">Join Now</a>
+              <a href="<?php echo MASTER_URL . "course/$course->id";?>" class="btn btn-warning">Join Now</a>
             </div>
           </div>
         </div>
@@ -65,7 +65,6 @@
     </div>
   </div>
 </section>
-
 
 <section class="analytics">
   <div class="background-box special-section">

@@ -1,0 +1,109 @@
+/* start header section */
+@import "./pages-header.css";
+section.header {
+  background-image: url(../img/course-page.jpg);
+}
+/* end header section */
+
+/* start testimonials section */
+.testimonials .container {
+  position: relative;
+}
+.testimonials .background {
+  background: url(../img/testimonials-background.jpg);
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  padding: 62px 0 115px 50px;
+  background-size: cover;
+  position: relative;
+  width: 100%;
+}
+.testimonials .background::before {
+  background: var(--global-color-black);
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  opacity: 0.5;
+  width: 100%;
+  content: "";
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+.testimonials .icon {
+  z-index: 5;
+  position: absolute;
+  font-size: 200px;
+  right: 30px;
+  top: 0;
+  transform: translateY(-50%);
+  color: var(--global-color-primary);
+}
+.testimonials .content {
+  z-index: 1;
+  position: relative;
+}
+.testimonials .content .title {
+  color: var(--global-color-white);
+}
+.testimonials .content .testimons {
+  margin-top: 40px;
+  overflow: hidden;
+  z-index: 3;
+}
+.testimonials .content .testimons .box {
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  display: flex;
+  width: fit-content !important;
+}
+.testimonials .content .testimons .box .desc {
+  background: var(--global-color-black);
+  font-family: var(--global-font-sec);
+  color: var(--global-color-white);
+  box-sizing: content-box;
+  padding: 20px 25px;
+  font-style: italic;
+  line-height: 1.5;
+  font-size: 18px;
+  width: 150px;
+}
+@media (min-width: 1400px) {
+  .testimonials .content .testimons .box .desc {
+    padding: 40px 50px 60px;
+    width: 250px;
+  }
+}
+.testimonials .content .testimons .box .info {
+  justify-content: center;
+  margin-top: -35px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  display: flex;
+}
+.testimonials .content .testimons .box .info .profile-img {
+  margin-bottom: 22px;
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+}
+.testimonials .content .testimons .box .info .stars {
+  margin-bottom: 8px;
+  color: #ffc402;
+  font-size: 10px;
+}
+.testimonials .content .testimons .box .info .name {
+  color: var(--global-color-white);
+  margin-bottom: 6px;
+}
+.testimonials .content .testimons .box .info .job {
+  color: var(--global-color-text);
+  font-size: 13px;
+  margin: 0;
+}
+/* end testimonials section */

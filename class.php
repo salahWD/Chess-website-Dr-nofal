@@ -3,8 +3,9 @@
 class Router {
   private $handlers = [];
   private $not_found;
-  private const GET_METHOD = "GET";
+  private const GET_METHOD  = "GET";
   private const POST_METHOD = "POST";
+  private const ID          = "{id}";
 
   public function get($url, $handler) {
     $this->add_handler(self::GET_METHOD, $url, $handler);
@@ -32,8 +33,22 @@ class Router {
     $method = $_SERVER["REQUEST_METHOD"];
 
     $callback = null;
+    $id = null;
     foreach($this->handlers as $handler) {
-      if ($handler["url"] == $request_url && $handler["method"] == $method) {
+      if (str_contains($handler["url"], self::ID)) {
+        $path_arr = explode("/", $handler["url"]);
+        $id_index = array_search(self::ID, $path_arr);
+        if ($id_index != false) {
+          $url_arr = explode("/", $request_url);
+          $id = isset($url_arr[$id_index]) ? intval($url_arr[$id_index]): null;
+          if (is_numeric($id)) {
+            $handler["url"] = str_replace(self::ID, $id, $handler["url"]);
+            if (str_contains($request_url, $handler["url"]) && $handler["method"] == $method) {
+              $callback = $handler["handler"];
+            }
+          }
+        }
+      }else if (str_contains($request_url, $handler["url"]) && $handler["method"] == $method) {
         $callback = $handler["handler"];
       }
     }
@@ -46,7 +61,7 @@ class Router {
     }
 
     call_user_func_array($callback, [
-      array_merge($_GET, $_POST)
+      array_merge($_GET, $_POST, [$id])
     ]);
     exit();
 

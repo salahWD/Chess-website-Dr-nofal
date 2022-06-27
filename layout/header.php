@@ -3,7 +3,7 @@
     <nav class="navbar">
       <div class="content">
         <div class="logo">
-          <img src="./img/logo.png" alt="logo">
+          <img src="<?php echo Router::route("img/logo.png");?>" alt="logo">
         </div>
         <div class="pages">
           <ul class="list-unstyled">
