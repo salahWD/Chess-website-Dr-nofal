@@ -1,3 +1,9 @@
+const mediaQuery = window.matchMedia('(min-width: 992px)');
+let postPerPage = 1;
+if (mediaQuery.matches) {
+  postPerPage = 2;
+}
+
 function $(element) {
   let select = document.querySelectorAll(element);
   if (Array.isArray(select)) {
@@ -9,6 +15,20 @@ function $(element) {
   }else {
     return select;
   }
+}
+
+let header = $("#header")[0];
+let overlay = $("#header-overlay")[0];
+
+if ($("#header-btn")[0]) {
+  $("#header-btn")[0].addEventListener("click", function () {
+    overlay.classList.toggle("active");
+    header.classList.toggle("active");
+  });
+  overlay.addEventListener("click", function () {
+    overlay.classList.remove("active");
+    header.classList.remove("active");
+  });
 }
 
 window.addEventListener("load", function () {
@@ -37,7 +57,7 @@ const testimonials = new Swiper('.testimonials-swiper', {
   },
   speed: 500,
   spaceBetween: 20,
-  slidesPerView: 2,
+  slidesPerView: postPerPage,
   loop: true,
   grabCursor: true,
   pauseOnMouseEnter: true,

@@ -1,0 +1,116 @@
+@import url(./lib/pages-header.css);
+section.header {
+  background-image: url(../img/blog-background.jpg);
+}
+
+section.article {
+  padding-top: 60px;
+}
+section.article .container {
+  box-sizing: content-box;
+  max-width: 800px;
+  margin: auto;
+}
+section.article .image {
+  width: 100%;
+}
+section.article .image img {
+  object-position: center center;
+  margin-bottom: 20px;
+  object-fit: cover;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+section.article .content,
+section.article .content p {
+  line-height: 1.5;
+  color: var(--global-color-text-dark);
+  font-size: 16px;
+  font-family: var(--global-font-sec);
+}
+section.article .content a {
+  text-decoration: underline;
+  color: #000;
+}
+section.article .content h2,
+section.article .content h3,
+section.article .content h4 {
+  text-transform: capitalize;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+section.article .content h2 {
+  font-size: 48px;
+}
+section.article .content h3 {
+  font-size: 36px;
+}
+section.article .content h4 {
+  font-size: 24px;
+}
+section.article .divider {
+  margin: 35px 0;
+}
+section.article .end {
+  margin: 65px 0 35px !important;
+}
+section.article .article-info {
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0px 20px 0px;
+  display: flex;
+}
+section.article .article-info .tags {
+  margin: 0;
+  font-family: var(--global-font-sec);
+  color: var(--global-color-text-dark);
+}
+section.article .article-info .tags a {
+  text-decoration: underline;
+  margin-left: 8px;
+  color: #000;
+}
+section.article .article-info .share {
+  font-family: var(--global-font-sec);
+  color: var(--global-color-text-dark);
+  align-items: center;
+  column-gap: 20px;
+  display: flex;
+  margin: 0;
+}
+section.article .article-info .share .btns {
+  display: inline-flex;
+  column-gap: 10px;
+}
+section.article .article-info .share .btns .btn {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 40px;
+  width: 40px;
+  padding: 0;
+}
+section.article .comments .title {
+  color: var(--global-color-text-dark);
+  font-family: var(--global-font-sec);
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+@media (max-width: 767px) {
+  section.article .container {
+    max-width: unset;
+    width: 100%;
+    padding: 0 30px;
+    box-sizing: border-box;
+  }
+  section.article .article-info {
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 20px;
+    justify-content: center !important;
+  }
+}

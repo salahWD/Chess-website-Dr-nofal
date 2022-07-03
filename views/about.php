@@ -1,15 +1,10 @@
-<section class="header background special-section">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="text-center center-box">
-      <h2 class="title cap">about us</h2>
-      <ul class="path list-unstyled">
-        <li class="page">home</li>
-        <li class="page">about</li>
-      </ul>
-    </div>
-  </div>
-</section>
+<?php
+  $page_info = [
+    "title" => "about us",
+    "sub_page" => "about"
+  ];
+  include_once LAYOUT_PATH . "pages-header.php";
+?>
 
 <section class="about-us">
   <div class="box img-box">
@@ -60,7 +55,7 @@
           <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa cum sociis natoque.</p>
         </div>
       </div>
-      <div class="card animate__delay-01 animate__animated" data-animation="animate__fadeInUp">
+      <div class="lg-visible card img animate__delay-01 animate__animated" data-animation="animate__fadeInUp">
         <div class="background"></div>
       </div>
       <div class="card white animate__delay-02 animate__animated" data-animation="animate__fadeInDown">
@@ -168,6 +163,7 @@
         <div class="text-holder">
           <p class="desc">Hi I am Dr.Mohamed nofal<br/>I am a Pediatrician Doctor and expert chess player and coach<br/>and I have made a lot of courses and teaching videos on different platforms like youtube, liches.org, and chess.com.<br/>and I am a contributor on chess.com in Arabic with +13 year of experience</p>
         </div>
+        <hr class="divider">
         <div class="awards-seciton">
           <h3 class="title">my awards</h3>
           <div class="awards">

@@ -1,9 +1,9 @@
 <footer class="footer">
   <div class="container">
     <div class="content">
-      <div class="info">
+      <div class="menu info">
         <div class="logo">
-          <img src="./img/logo.png" alt="">
+          <img src="<?php echo Router::route("img/logo.png");?>" alt="">
         </div>
         <p>Lorem ipsum dolor sit amet, consectet adipiscing elit, sed do eiusmod.</p>
         <div class="details">
@@ -21,7 +21,7 @@
           </div>
         </div>
       </div>
-      <div class="quick-links">
+      <div class="menu quick-links">
         <h4 class="footer-title">quick links</h4>
         <ul class="list list-unstyled">
           <li><a href="#haeder-section">home</a></li>
@@ -31,14 +31,14 @@
           <li><a href="#contact">contact</a></li>
         </ul>
       </div>
-      <div class="useful-links">
+      <div class="menu useful-links">
         <h4 class="footer-title">useful links</h4>
         <ul class="list list-unstyled">
           <li><a href="#haeder-section">support</a></li>
           <li><a class="upper" href="#contact">FAQ</a></li>
         </ul>
       </div>
-      <div class="contact">
+      <div class="menu contact">
         <h4 class="footer-title">our social media</h4>
         <div class="socials">
           <a href="#" class="btn btn-warning">

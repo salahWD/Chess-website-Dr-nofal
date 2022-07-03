@@ -1,0 +1,23 @@
+@use "./utils/pages-header";
+@use "./utils/about-us";
+@use "./utils/cards-about";
+@use "./utils/choose";
+@use "./utils/coach";
+@use "./utils/analytics";
+
+section.header {
+	background-image: url(../img/about-us-page.jpg);
+}
+section {
+	padding: 50px 0;
+}
+.flex-2 {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 110px;
+	.box {
+		max-width: 50%;
+		flex: 1;
+	}
+}

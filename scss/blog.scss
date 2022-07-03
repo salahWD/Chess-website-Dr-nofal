@@ -1,0 +1,7 @@
+@use "./utils/pages-header";
+@use "./utils/blog";
+@use "./utils/instagram";
+
+section.header {
+	background-image: url(../img/blog-background.jpg);
+}

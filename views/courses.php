@@ -1,19 +1,11 @@
 <?php
   $class = ["fadeInLeft", "fadeInDown", "fadeInRight"];
+  $page_info = [
+    "title" => "Courses",
+    "sub_page" => "courses"
+  ];
+  include_once LAYOUT_PATH . "pages-header.php";
 ?>
-
-<section class="header background special-section">
-  <div class="overlay"></div>
-  <div class="container">
-    <div class="text-center center-box">
-      <h2 class="title cap">Courses</h2>
-      <ul class="path list-unstyled">
-        <li class="page">home</li>
-        <li class="page">courses</li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <section class="courses">
   <div class="container">
@@ -50,11 +42,15 @@
               <div class="rating">
                 <span class="rate"><?php echo $course->rate;?></span>
                 <div class="stars">
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fa-solid fa-star-half"></i>
+                  <?php $count = $course->rate;?>
+                  <?php for($i=0;ceil($course->rate) > $i;$i++):?>
+                    <?php if (1 > $count):?>
+                      <i class="fa-solid fa-star-half"></i>
+                    <?php else:?>
+                      <i class="fas fa-star"></i>
+                    <?php endif;?>
+                    <?php $count--;?>
+                  <?php endfor;?>
                 </div>
               </div>
               <a href="<?php echo MASTER_URL . "course/$course->id";?>" class="btn btn-warning">Join Now</a>
@@ -93,6 +89,125 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <div class="background">
+      <i class="icon jki jki-quote-right-solid"></i>
+      <div class="content">
+        <div class="animate__animated" data-animation="animate__fadeInLeft">
+          <h4 class="section-title">Our Testimonials</h4>
+          <h2 class="title">What Are Student Says</h2>
+        </div>
+        <div class="testimonials-swiper testimons animate__animated" data-animation="animate__fadeInRight">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <div class="box">
+                  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                  <div class="info">
+                    <img src="./img/testimonials-01.jpg" alt="" class="profile-img">
+                    <div class="stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half"></i>
+                    </div>
+                    <strong class="name">John Doe</strong>
+                    <p class="job">Student</p>
+                  </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="box">
+                  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                  <div class="info">
+                    <img src="./img/testimonials-02.jpg" alt="" class="profile-img">
+                    <div class="stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half"></i>
+                    </div>
+                    <strong class="name">Kelly Fred</strong>
+                    <p class="job">Student</p>
+                  </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="box">
+                  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                  <div class="info">
+                    <img src="./img/testimonials-03.jpg" alt="" class="profile-img">
+                    <div class="stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half"></i>
+                    </div>
+                    <strong class="name">Frederica Tan</strong>
+                    <p class="job">Student</p>
+                  </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="box">
+                  <div class="desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+                  <div class="info">
+                    <img src="./img/testimonials-04.jpg" alt="" class="profile-img">
+                    <div class="stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half"></i>
+                    </div>
+                    <strong class="name">Andre Sam</strong>
+                    <p class="job">Student</p>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="instagram special-section">
+  <div class="text-center animate__animated" data-animation="animate__fadeInUp">
+    <a href="https://www.instagram.com/mohamed.nofal.dr.chess/"><h4 class="section-title">@mohamed.nofal.dr.chess</h4></a>
+    <h3 class="title">Dr.nofal On Instagram</h3>
+  </div>
+  <div class="posts animate__animated" data-animation="animate__fadeInDown">
+    <div class="post">
+      <img src="./img/instagram-01.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
+    </div>
+    <div class="post">
+      <img src="./img/instagram-02.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
+    </div>
+    <div class="post">
+      <img src="./img/instagram-03.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
+    </div>
+    <div class="post">
+      <img src="./img/instagram-04.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
+    </div>
+    <div class="post">
+      <img src="./img/instagram-05.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
+    </div>
+    <div class="post">
+      <img src="./img/instagram-06.jpg" alt="">
+      <i class="jki jki-instagram-1-light"></i>
     </div>
   </div>
 </section>

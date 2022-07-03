@@ -1,0 +1,203 @@
+
+section.coach {
+	.coach {
+		align-items: center;
+		column-gap: 60px;
+		margin-top: 20px;
+		display: flex;
+		.coach-profile {
+			flex-direction: column;
+			display: flex;
+			.profile {
+				position: relative;
+				margin: 0;
+				.overlay {
+					background-color: #000;
+					transform-origin: 50% 100%;
+					transform: scaleY(0);
+					opacity: 0;
+					z-index: 1;
+				}
+				&:hover {
+					.overlay {
+						transform: scaleY(1);
+						opacity: 0.6;
+					}
+					.btns {
+						bottom: 0;
+						opacity: 1;
+					}
+				}
+				.btns {
+					transition: bottom 0.3s ease-in-out, opacity 0.3s ease-in-out;
+					transform: translateX(-50%);
+					justify-content: center;
+					align-items: flex-end;
+					padding-bottom: 80px;
+					position: absolute;
+					column-gap: 15px;
+					display: flex;
+					bottom: -30px;
+					z-index: 2;
+					opacity: 0;
+					left: 50%;
+					.btn {
+						padding: 0;
+						justify-content: center;
+						display: inline-flex;
+						align-items: center;
+						height: 45px;
+						width: 45px;
+						i {
+							font-size: 20px;
+						}
+					}
+				}
+				img {
+					object-position: center center;
+					object-fit: cover;
+					max-width: 100%;
+					display: block;
+					width: 100%;
+				}
+			}
+			.info {
+				box-shadow: 0px 5px 20px 0px rgb(0 0 0 / 10%);
+				background-color: var(--global-color-white);
+				margin: -55px 20px 0px 20px;
+				padding: 10px 0px 5px 0px;
+				justify-content: center;
+				flex-direction: column;
+				align-items: center;
+				position: relative;
+				display: flex;
+				z-index: 2;
+				.name {
+					padding: 0 20px;
+					margin: 8px 0 16px;
+					text-align: center;
+					font-size: 35px;
+				}
+				.job {
+					color: var(--global-color-text-dark);
+					font-family: var(--global-font-sec);
+					text-transform: capitalize;
+					font-weight: normal;
+					margin: 0 0 16px;
+					font-weight: bold;
+					font-size: 16px;
+				}
+			}
+		}
+		.coach-info {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			.title {
+				color: var(--global-color-primary);
+				text-transform: capitalize;
+				margin: 0 0 16px;
+				font-size: 32px;
+			}
+			.text-holder {
+				.desc {
+					margin: 0;
+					color: var(--global-color-text-dark);
+					padding-right: 100px;
+				}
+			}
+			.divider {
+				margin-top: 40px;
+				margin-bottom: 40px;
+			}
+			.awards {
+				display: flex;
+				column-gap: 40px;
+				.award {
+					max-width: 60px;
+					img {
+						width: 100%;
+						object-fit: cover;
+						object-position: center center;
+					}
+				}
+			}
+		}
+	}
+
+	@media (max-width: 1199px) {
+		.coach {
+			margin-top: 45px;
+			.coach-info {
+				.text-holder {
+					.desc {
+						padding-right: 0;
+					}
+				}
+			}
+		}
+	}
+	@media (max-width: 991px) {
+		position: relative;
+		.coach {
+			column-gap: 20px;
+			.coach-info {
+				align-items: center;
+				flex-grow: 2;
+				.divider {
+					margin-bottom: 25px;
+				}
+				.awards {
+					justify-content: center;
+					flex-wrap: wrap;
+					column-gap: 12px;
+					row-gap: 14px;
+					.award {
+						max-width: 50px;
+						width: 100%;
+					}
+				}
+				.awards-seciton {
+					text-align: center;
+				}
+			}
+		}
+	}
+	@media (max-width: 767px) {
+		position: relative;
+	}
+	@media (max-width: 640px) {
+		.coach {
+			flex-direction: column;
+			row-gap: 22px;
+			margin-top: 25px;
+			.coach-profile {
+				.info {
+					.name {
+						font-size: 20px;
+					}
+					.job {
+						font-size: 14px;
+					}
+				}
+				order: 1;
+				width: 80%;
+			}
+			.coach-info {
+				order: 2;
+				.awards {
+					.award {
+						max-width: 35px;
+					}
+				}
+			}
+		}
+	}
+	@media (min-width: 1400px) {
+		.coach {
+			.coach-profile {
+				width: 450px;
+			}
+		}
+	}
+}

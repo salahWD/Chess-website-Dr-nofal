@@ -1,10 +1,18 @@
 section.header {
   padding: 220px 0px 150px 0px;
-}section.header::before {
+}
+section.header::before {
   all: unset;
 }
 section.header .overlay {
   z-index: 1;
+}
+section.header .container {
+  position: relative;
+  z-index: 2;
+}
+section.header .container {
+  max-width: 675px;
 }
 section.header .center-box {
   color: var(--global-color-white);
@@ -31,7 +39,7 @@ section.header .path li {
 section.header .path li:not(:first-of-type) {
   padding-left: 15px;
 }
-section.header .path li:not(:first-of-type)::before {
+section.header .path .page:not(:first-of-type)::before {
   position: relative;
   content: "\e925";
   right: 15px;
@@ -39,4 +47,17 @@ section.header .path li:not(:first-of-type)::before {
   font-size: 14px;
   font-family: 'jkiticon' !important;
   color: var(--global-color-primary);
+}
+section.header .path .icon i {
+  margin-right: 8px;
+}
+@media (max-width: 640px) {
+  section.header .path {
+    flex-direction: column;
+    row-gap: 20px;
+    align-items: flex-start;
+  }
+  section.header .path li {
+    padding: 0 !important;
+  }
 }

@@ -1,0 +1,109 @@
+
+section.cards {
+	overflow: visible;
+	padding-bottom: 100px;
+	padding-top: 80px;
+	.cards-box {
+		display: flex;
+		position: relative;
+		.card {
+			border-radius: 0;
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+			margin: 0;
+			text-align: center;
+			padding: 40px 50px 30px 50px;
+			box-shadow: 0px 5px 20px 0px rgb(0 0 0 / 10%);
+			.background {
+				background-image: url(../img/about-us-page-02.jpg);
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				left: 0;
+				top: 0;
+			}
+			.icon {
+				color: var(--global-color-primary);
+				i {
+					font-size: 60px;
+				}
+			}
+			.title {
+				color: var(--global-color-black);
+				font-size: 35px;
+				margin-bottom: 15px;
+			}
+			p {
+				color: var(--global-color-text-dark);
+			}
+			&:nth-child(odd) {
+				background-color: var(--global-color-black);
+				.title {
+					color: var(--global-color-white);
+				}
+				p {
+					color: var(--global-color-text);
+				}
+			}
+			&:nth-child(even) {
+				background-color: var(--global-color-white);
+			}
+		}
+		.card.img {
+			position: relative;
+		}
+	}
+  
+  @media (min-width: 1200px) {
+    .cards-box {
+      .card {
+        display: flex;
+      }
+    }
+  }
+  @media (max-width: 1199px) {
+    .cards-box {
+      flex-wrap: wrap;
+      .card {
+        width: 50%;
+        &:nth-child(3) {
+          background-color: var(--global-color-white);
+          .title {
+            background-color: unset;
+            color: var(--global-color-black);
+          }
+          p {
+            background-color: unset;
+            color: var(--global-color-text-dark);
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 991px) {
+    .cards-box {
+      flex-wrap: wrap;
+      .card {
+        width: 50%;
+        &:last-of-type {
+          width: 100%;
+        }
+      }
+    }
+  }
+  @media (max-width: 767px) {
+		.cards-box {
+			flex-wrap: initial;
+			flex-direction: column;
+			box-shadow: none;
+			.card {
+				box-shadow: 0px 5px 20px 0px rgb(0 0 0 / 10%);
+				flex-basis: 100%;
+				width: 100%;
+				padding: 35px;
+			}
+		}
+  }
+
+}

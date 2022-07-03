@@ -12,6 +12,15 @@
 }
 /* === end global variables === */
 
+/* === stat global elements style === */
+iframe.seamless {
+  background-color: transparent;
+  border: 0px none transparent;
+  padding: 0px;
+  overflow: hidden;
+}
+/* === end global elements style === */
+
 /* === start container === */
 .container,
 .container-fluid,
@@ -115,6 +124,9 @@
 .text-center {
   text-align: center !important;
 }
+.c-p {
+  color: var(--global-color-primary) !important;
+}
 .m-0 {
   margin: 0;
 }
@@ -139,6 +151,12 @@
 .w-100 {
   width: 100%;
 }
+.divider {
+  position: relative;
+  opacity: 0.2;
+  margin: 20px 0;
+  width: 100%;
+}
 /* === end global class === */
 
 /* === start utilities === */
@@ -154,7 +172,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: -1;
+  z-index: 1;
 }
 /* === end utilities === */
 

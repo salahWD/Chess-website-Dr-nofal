@@ -1,0 +1,10 @@
+@use "./utils/pages-header";
+@use "./utils/courses";
+@use "./utils/cards";
+@use "./utils/analytics";
+@use "./utils/testimonials";
+@use "./utils/instagram";
+
+section.header {
+  background-image: url(../img/courses-page.jpg);
+}

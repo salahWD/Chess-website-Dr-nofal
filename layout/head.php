@@ -4,7 +4,7 @@
 	<!-- Meta Data -->
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<!-- Title -->
 	<title>Dr.nofl Chess page</title>
 	<!-- swiper -->
@@ -14,8 +14,8 @@
 	<!-- Css Animation -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 	<!-- Custom Style -->
-	<link rel="stylesheet" href="<?php echo CSS_URL;?>custom-lib.css">
-	<link rel="stylesheet" href="<?php echo CSS_URL;?>global.css">
+	<link rel="stylesheet" href="<?php echo CSS_URL;?>lib/custom-lib.css">
+	<link rel="stylesheet" href="<?php echo CSS_URL;?>lib/global.css">
 	<?php if (isset($custom_style) && !empty($custom_style)):?>
 		<link rel="stylesheet" href="<?php echo CSS_URL . $custom_style;?>">
 	<?php endif;?>

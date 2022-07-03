@@ -1,0 +1,69 @@
+@use "./utils/forms";
+$blackG: linear-gradient(
+  310deg,
+  hsl(240deg 2% 10%) 0%,
+  hsl(240deg 2% 7%) 23%,
+  hsl(0deg 0% 2%) 100%
+);
+.dashboard {
+  padding: 0;
+  margin: 0;
+  .login {
+    background-color: white;
+    padding: 60px 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 100vh;
+    min-width: 100vw;
+    .title {
+      margin-bottom: 35px;
+      text-align: center;
+    }
+    &::before {
+      background-image: linear-gradient(170deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
+      transform: translateX(-50%);
+      border-radius: 50%;
+      position: absolute;
+      width: 70vh;
+      z-index: 1;
+      height: 70vh;
+      content: "";
+      left: 0;
+      top: calc((70vh / 5) * -1) ;
+    }
+    &::after {
+      background-image: linear-gradient(355deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
+      transform: translateX(50%);
+      border-radius: 50%;
+      position: absolute;
+      width: 70vh;
+      z-index: 1;
+      height: 70vh;
+      content: "";
+      right: 0;
+      bottom: calc((70vh / 5) * -1) ;
+    }
+    .container {
+      z-index: 2;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+    }
+    .form {
+      box-shadow: 0px 5px 10px 0px rgb(20 20 20 / 6%);
+      background-color: white;
+      min-width: 500px;
+      .row {
+        width: 100%;
+      }
+      .btn {
+        background-image: linear-gradient(170deg, #dfbb43 -10%, rgb(255, 132, 0) 120%);
+        border-radius: 6px;
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+}

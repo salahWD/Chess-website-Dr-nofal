@@ -4,7 +4,7 @@ class Course {
   public $id;
   public $image;
   public $title;
-  public $desc;
+  public $description;
   public $price;
   public $rate;
   public $date;

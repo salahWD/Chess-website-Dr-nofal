@@ -1,0 +1,63 @@
+<nav class="navbar">
+  <div class="logo">
+    <img src="<?= Router::route("img/logo.png");?>" alt="">
+  </div>
+  <ul class="items-list list-unstyled">
+    <a href="<?= Router::route("dashboard");?>" <?= isset($page) && $page == "dashboard/index" ? 'class="active"': '';?>>
+      <li>
+        <span class="icon"><i class="fa-solid fa-house"></i></span>
+        <span class="title">dashboard</span>
+      </li>
+    </a>
+    <a href="<?= Router::route("dashboard/articles");?>" <?= isset($page) && str_contains($page, "/article") ? 'class="active"': '';?>>
+      <li>
+        <span class="icon"><i class="fa-solid fa-feather"></i></span>
+        <span class="title">articles</span>
+      </li>
+    </a>
+    <a href="<?= Router::route("dashboard/courses");?>" <?= isset($page) && str_contains($page, "/courses") ? 'class="active"': '';?>>
+      <li>
+        <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span class="title">courses</span>
+      </li>
+    </a>
+    <a href="<?= Router::route("dashboard/users");?>" <?= isset($page) && str_contains($page, "/users") ? 'class="active"': '';?>>
+      <li>
+        <span class="icon"><i class="fa-solid fa-users"></i></span>
+        <span class="title">users</span>
+      </li>
+    </a>
+  </ul>
+</nav>
+<div class="main">
+  <div class="container">
+    <nav class="header">
+      <button id="navbar-trigger" class="btn btn-transparent"><i class="fa-solid fa-bars"></i></button>
+      <div class="profile" id="profile-trigger">
+        <div class="image">
+          <img src="<?= Router::route("uploads/{$admin->image}");?>" alt="">
+        </div>
+        <div class="menu animate__animated animate__fadeOutUp" id="profile">
+          <ul class="list list-unstyled">
+            <a href="#">
+              <li>
+                <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                <span class="title">edit profile</span>
+              </li>
+            </a>
+            <a href="#">
+              <li>
+                <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                <span class="title">options</span>
+              </li>
+            </a>
+            <a href="#">
+              <li>
+                <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                <span class="title">logout</span>
+              </li>
+            </a>
+          </ul>
+        </div>
+      </div>
+    </nav>
