@@ -83,6 +83,18 @@ class Admin {
     }
   }
 
+  public static function get_admin_session($selection = null) {
+    if (isset($selection) && $selection != null && is_string($selection)) {
+      return unserialize(base64_decode($_SESSION["admin"]))->$selection ?? null;
+    }else {
+      return unserialize(base64_decode($_SESSION["admin"]));
+    }
+  }
+
+  public static function set_admin_session($admin) {
+    return $_SESSION["admin"] = base64_encode(serialize($admin));
+  }
+
   public function create_article($data) {
     include_once MODELS_PATH . "article.php";
     $model = new Article();

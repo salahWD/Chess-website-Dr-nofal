@@ -36,9 +36,18 @@
       <input type="text" name="url_title" id="url-title" value="<?= $article->url_title;?>" placeholder="exampil-for-url-title">
       <p class="error" id="url-title-error"></p>
     </div>
-    <div class="input-box">
-      <label for="type">type</label>
-      <input type="text" name="type" id="type" value="<?= $article->tag;?>" placeholder="article type">
+    <div class="input-container">
+      <div class="input-box type">
+        <label for="type">type</label>
+        <input type="text" name="type" id="type" value="<?= $article->tag;?>" placeholder="article type">
+      </div>
+      <div class="input-box">
+        <label for="publish">publish</label>
+        <?php $i = [["icon" => "fa-eye-slash", "class" => "btn-danger"], ["icon" => "fa-eye", "class" => "btn-primary"]];?>
+        <?php $active = $article->active == 1 ? 1: 0;?>
+        <button class="btn <?= $i[$active]["class"];?>" type="button" data-value="<?= $active;?>" id="publish">public <i id="public-icon" class="fa-solid <?= $i[$active]["icon"];?>"></i></button>
+        <input class="d-none" type="hidden" name="active" id="public-value" value="<?= $active;?>" />
+      </div>
     </div>
     <div class="input-box">
       <label for="description">description</label>

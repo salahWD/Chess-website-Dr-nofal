@@ -72,81 +72,56 @@ class Router {
   }
 
   public function run() {
-
+    
     include_once CLASS_PATH . "permissionscheck.php";
     session_start();
-    $is_admin = PermissionsCheck::is_valid_admin_request();
+
+    $is_admin       = PermissionsCheck::is_valid_admin_request();
     $request_parse  = parse_url($_SERVER["REQUEST_URI"]);
     $request_url    = $request_parse["path"] ?? "";
-    $method = $_SERVER["REQUEST_METHOD"];
+    $method         = $_SERVER["REQUEST_METHOD"];
 
     $callback = null;
     $id = null;
-    $title = null;
+    $param = null;
     
     foreach($this->handlers as $handler) {
-
+      
       $id = null;
-      $title = null;
+      $param = null;
+      
+      if (($handler["admin_check"] === true && $is_admin) || $handler["admin_check"] === false) {
 
-      $id = $this->has_id($handler["url"], $request_url);
-      $param = $this->has_param($handler["url"], $request_url);
+        $id = $this->has_id($handler["url"], $request_url);
+        $param = $this->has_param($handler["url"], $request_url);
 
-      if ($id != false) {
-        
-        $handler["url"] = str_replace(self::ID, $id, $handler["url"]);
-
-        if ($request_url == $handler["url"] && $handler["method"] == $method) {
-
-          if ($handler["admin_check"]) {
-            if ($is_admin) {
-              $callback = $handler["handler"];
-            }else {
-              header("HTTP/1.0 404 Not Found");
-              exit();
-              // header("Location: 404");
-            }
-          }else {
-            $callback = $handler["handler"];
-          }
-          break;
-        }
-        continue;
-      }else if ($param != false) {
-
-        $handler["url"] = str_replace(self::PARAM, $param, $handler["url"]);
-        if ($request_url == $handler["url"] && $handler["method"] == $method) {
+        if ($id != false) {
           
-          if ($handler["admin_check"]) {
-            if ($is_admin) {
-              $callback = $handler["handler"];
-            }else {
-              header("HTTP/1.0 404 Not Found");
-              exit();
-              // header("Location: 404");
-            }
-          }else {
-            $callback = $handler["handler"];
-          }
-          break;
-        }
-        continue;
-      }else if ($request_url == $handler["url"] && $handler["method"] == $method) {
+          $handler["url"] = str_replace(self::ID, $id, $handler["url"]);
 
-        if ($handler["admin_check"]) {
-          var_dump($_SESSION);
-          var_dump($is_admin);
-          if ($is_admin) {
+          if ($request_url == $handler["url"] && $handler["method"] == $method) {
             $callback = $handler["handler"];
-          }else {
-            // header("HTTP/1.0 404 Not Found");
-            exit();
+            break;
           }
-        }else {
+          continue;
+        }else if ($param != false) {
+
+          $handler["url"] = str_replace(self::PARAM, $param, $handler["url"]);
+          if ($request_url == $handler["url"] && $handler["method"] == $method) {
+            
+            $callback = $handler["handler"];
+            break;
+          }
+          continue;
+        }else if ($request_url == $handler["url"] && $handler["method"] == $method) {
+
           $callback = $handler["handler"];
-        }
 
+        }
+      }else {
+        continue;
       }
+
     }
 
     if (!$callback) {
@@ -157,7 +132,7 @@ class Router {
     }
 
     call_user_func_array($callback, [
-      array_merge($_GET, $_POST, $_FILES, ["id" => $id, "title" => $title])
+      array_merge($_GET, $_POST, $_FILES, ["id" => $id, "param" => $param])
     ]);
     exit();
 
@@ -221,6 +196,8 @@ class Template {
       include_once LAYOUT_PATH . "dashboard_head.php";
     }
     if ($level == 3) {
+      include_once MODELS_PATH . "admin.php";
+      $admin = Admin::get_admin_session();
       include_once LAYOUT_PATH . "dashboard_navabr.php";
     }
 

@@ -9,10 +9,10 @@ class PermissionsCheck {
 
       if (isset($args["action"]) && in_array($args["action"], $actions)) {
         include MODELS_PATH . "admin.php";
-        return array_merge(Admin::is_valid_token($token), ["action" => $args["action"]]);
+        return array_merge(Admin::is_valid_token($token), ["action" => $args["action"]]);// merged([success, id][action])
       }
     }else {
-      return false;
+      return ["success" => false];
     }
 
   }

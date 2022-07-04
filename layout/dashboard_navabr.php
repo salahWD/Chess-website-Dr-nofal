@@ -34,30 +34,27 @@
     <nav class="header">
       <button id="navbar-trigger" class="btn btn-transparent"><i class="fa-solid fa-bars"></i></button>
       <div class="profile" id="profile-trigger">
+        <h3 class="admin-name"><?= $admin->name;?></h3>
         <div class="image">
-          <img src="<?= Router::route("uploads/{$admin->image}");?>" alt="">
+          <img src="<?= Router::route("uploads/img/{$admin->image}");?>" alt="">
         </div>
-        <div class="menu animate__animated animate__fadeOutUp" id="profile">
-          <ul class="list list-unstyled">
-            <a href="#">
-              <li>
-                <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
-                <span class="title">edit profile</span>
-              </li>
-            </a>
-            <a href="#">
-              <li>
-                <span class="icon"><i class="fa-solid fa-gear"></i></span>
-                <span class="title">options</span>
-              </li>
-            </a>
-            <a href="#">
-              <li>
-                <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
-                <span class="title">logout</span>
-              </li>
-            </a>
-          </ul>
+        <div class="position-holder" id="profile">
+          <div class="menu animate__animated">
+            <ul class="list list-unstyled">
+              <a href="<?= Router::route("admin/profile");?>">
+                <li>
+                  <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                  <span class="title">edit profile</span>
+                </li>
+              </a>
+              <a href="<?= Router::route("logout");?>">
+                <li>
+                  <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                  <span class="title">logout</span>
+                </li>
+              </a>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>

@@ -31,6 +31,18 @@ $dangerB: #dc3545;
       font-size: 18px;
     }
   }
+  .input-container {
+    display: flex;
+    width: 100%;
+    column-gap: 20px;
+    .input-box {
+      flex-basis: content;
+      flex-grow: 1;
+      &.type {
+        flex-grow: 3;
+      }
+    }
+  }
   .input-box {
     flex-direction: column;
     margin-bottom: 20px;
@@ -41,11 +53,11 @@ $dangerB: #dc3545;
       label {
         color: $dangerB;
       }
-      input {
+      input, textarea {
         border-color: $dangerB !important;
       }
       .error {
-        margin: 16px;
+        margin: 8px 16px;
         height: max-content;
         opacity: 0.8;
       }
@@ -131,6 +143,9 @@ $dangerB: #dc3545;
   }
   .btn {
     margin-top: auto;
+    &:not(:first-of-type) {
+      margin-top: 15px;
+    }
   }
   .content {
     font-family: var(--global-font-sec);

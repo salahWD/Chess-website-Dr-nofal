@@ -178,7 +178,18 @@ body {
         font-size: 23px;
       }
       .profile {
+        align-items: center;
         position: relative;
+        column-gap: 20px;
+        display: flex;
+        user-select: none;
+        cursor: pointer;
+        .admin-name {
+          font-family: var(--global-font-primary);
+          font-size: 22px;
+          margin: 0;
+          padding: 0;
+        }
         .image {
           width: 55px;
           height: 55px;
@@ -191,38 +202,66 @@ body {
             object-position: center center;
           }
         }
-        .menu {
-          animation-duration: 0.3s;
-          box-shadow: $box-shadow;
-          background: var(--global-color-white);
+        
+        @keyframes fadeOutUpMenu {
+          0% {
+            transform: translateX(0);
+          }99% {
+            transform: translateX(0);
+          }to {
+            transform: translateX(100%);
+          }
+        }
+        .position-holder {
+          transition: box-shadow 0.3s ease-out;
+          animation-fill-mode: forwards;
           top: calc(100% + 10px);
-          border-radius: 5px;
+          height: fit-content;
           position: absolute;
-          padding: 15px;
-          width: 210px;
+          width: fit-content;
+          overflow: hidden;
+          border-radius: 5px;
           right: 10px;
-          .list {
-            display: flex;
-            flex-direction: column;
-            a {
-              border-radius: 5px;
-              text-decoration: none;
-              transition: 0.2s;
-              &:hover {
-                background-color: var(--global-color-bg);
-              }
-              li {
-                padding: 12px;
-                .icon {
-                  color: var(--global-color-black);
-                  opacity: 0.8;
-                  margin-right: 12px;
+          animation-duration: 0.35s;
+          animation-name: fadeOutUpMenu;
+          &.active {
+            animation-name: none;
+            box-shadow: $box-shadow;
+            .menu {
+              animation-name: fadeInUp;
+            }
+          }
+          .menu {
+            animation-name: fadeOutUp;
+            animation-duration: 0.3s;
+            background: var(--global-color-white);
+            top: -100%;
+            position: relative;
+            padding: 15px;
+            width: 210px;
+            .list {
+              display: flex;
+              flex-direction: column;
+              a {
+                border-radius: 5px;
+                text-decoration: none;
+                transition: 0.2s;
+                &:hover {
+                  background-color: var(--global-color-bg);
                 }
-                .title {
-                  font-family: var(--global-font-sec);
-                  font-size: 16px;
-                  font-weight: normal;
-                  color: var(--global-color-text-dark);
+                li {
+                  padding: 12px;
+                  .icon {
+                    color: var(--global-color-black);
+                    opacity: 0.8;
+                    margin-right: 12px;
+                  }
+                  .title {
+                    font-family: var(--global-font-sec);
+                    font-size: 16px;
+                    font-weight: normal;
+                    color: var(--global-color-text-dark);
+                  }
                 }
               }
             }
@@ -250,7 +289,7 @@ body {
           .number {
             color: var(--global-color-primary);
             font-size: 45px;
-            margin: 0;
+            margin: 0 0 10px 0;
           }
           .title {
             margin: 0;

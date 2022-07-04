@@ -17,47 +17,51 @@
       </div>
     </div>
     <div class="courses">
-      <?php foreach($courses as $i => $course):?>
-        <div class="course animate__animated" data-animation="animate__<?php echo $class[$i % 3];?>">
-          <div class="course-img">
-            <img src="<?php echo $course->get_img_url();?>" title="course name goes here" alt="chess course image">
-            <span class="price">
-              <h3 class="number">$<?php echo $course->price;?></h3>
-            </span>
-          </div>
-          <div class="course-info">
-            <h4 class="course-title"><?php echo $course->title;?></h4>
-            <div class="course-details">
-              <div class="duration">
-                <i class="icon fas fa-clock"></i>
-                <span><?php echo $course->duration;?> Hours / meeting</span>
-              </div>
-              <div class="verify">
-                <i class="icon fas fa-award"></i>
-                <span>Certification</span>
-              </div>
+      <?php if (is_array($courses) && count($courses) > 0):?>
+        <?php foreach($courses as $i => $course):?>
+          <div class="course animate__animated" data-animation="animate__<?php echo $class[$i % 3];?>">
+            <div class="course-img">
+              <img src="<?php echo $course->get_img_url();?>" title="course name goes here" alt="chess course image">
+              <span class="price">
+                <h3 class="number">$<?php echo $course->price;?></h3>
+              </span>
             </div>
-            <hr class="divider">
-            <div class="btn-rate">
-              <div class="rating">
-                <span class="rate"><?php echo $course->rate;?></span>
-                <div class="stars">
-                  <?php $count = $course->rate;?>
-                  <?php for($i=0;ceil($course->rate) > $i;$i++):?>
-                    <?php if (1 > $count):?>
-                      <i class="fa-solid fa-star-half"></i>
-                    <?php else:?>
-                      <i class="fas fa-star"></i>
-                    <?php endif;?>
-                    <?php $count--;?>
-                  <?php endfor;?>
+            <div class="course-info">
+              <h4 class="course-title"><?php echo $course->title;?></h4>
+              <div class="course-details">
+                <div class="duration">
+                  <i class="icon fas fa-clock"></i>
+                  <span><?php echo $course->duration;?> Hours / meeting</span>
+                </div>
+                <div class="verify">
+                  <i class="icon fas fa-award"></i>
+                  <span>Certification</span>
                 </div>
               </div>
-              <a href="<?php echo MASTER_URL . "course/$course->id";?>" class="btn btn-warning">Join Now</a>
+              <hr class="divider">
+              <div class="btn-rate">
+                <div class="rating">
+                  <span class="rate"><?php echo $course->rate;?></span>
+                  <div class="stars">
+                    <?php $count = $course->rate;?>
+                    <?php for($i=0;ceil($course->rate) > $i;$i++):?>
+                      <?php if (1 > $count):?>
+                        <i class="fa-solid fa-star-half"></i>
+                      <?php else:?>
+                        <i class="fas fa-star"></i>
+                      <?php endif;?>
+                      <?php $count--;?>
+                    <?php endfor;?>
+                  </div>
+                </div>
+                <a href="<?php echo MASTER_URL . "course/$course->id";?>" class="btn btn-warning">Join Now</a>
+              </div>
             </div>
           </div>
-        </div>
-      <?php endforeach;?>
+        <?php endforeach;?>
+      <?php else:?>
+        <h2 class="title">there's no courses yet.</h2>
+      <?php endif;?>
     </div>
   </div>
 </section>

@@ -100,13 +100,16 @@ document.addEventListener('DOMContentLoaded', function() {
       $("#dashboard").classList.toggle("active-navbar");
     });
     $("#profile-trigger").addEventListener("click", function () {
-      $("#profile").classList.toggle("animate__fadeOutUp");
-      $("#profile").classList.toggle("animate__fadeInUp");
+      $("#profile").classList.toggle("active");
+      // $("#profile").classList.toggle("animate__fadeInUp");
+    });
+    $("#profile").addEventListener("click", function (e) {
+      console.log("clicked");
+      e.stopPropagation();
     });
   }
 
   if ($("#content")) {
-    console.log($("#content"));
     const TOKEN = $("#token").value;
     const articleId = $("#article_id").value;
     let trigger = true;
@@ -167,6 +170,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
         savingData(window.editor, TOKEN, articleId);
       }
+    });
+
+    let i = 0;
+    let icon = $("#public-icon");
+    let publicInput = $("#public-value");
+    $("#publish").addEventListener("click", function () {
+      i = this.dataset.value == 1 ? 1: 0;
+      if (i == 0) {
+        i = 1;
+      }else {
+        i = 0;
+      }
+      publicInput.value = i;
+      this.classList.toggle("btn-danger");
+      this.classList.toggle("btn-primary");
+      icon.classList.toggle("fa-eye-slash");
+      icon.classList.toggle("fa-eye");
     });
 
   }

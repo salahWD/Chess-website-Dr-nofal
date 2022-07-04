@@ -22,11 +22,11 @@
 </div>
 <div class="row">
   <div class="articles items-box">
-    <h2 class="title">Recent Comments</h2>
+    <h2 class="title">manage all articles</h2>
     <div class="table">
       <div class="header">
         <h3 class="title">title</h3>
-        <h3 class="title">publish date</h3>
+        <h3 class="title">create date</h3>
         <h3 class="title">status</h3>
         <h3 class="title">actions</h3>
       </div>
