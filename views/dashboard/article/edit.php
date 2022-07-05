@@ -1,6 +1,5 @@
 <form action="<?= Router::route("api/article");?>" method="POST">
   <input type="hidden" value="<?= $token;?>" id="token">
-  <input type="hidden" value="<?= $article->id;?>" id="article_id">
   <div class="form row">
     <div class="info">
       <div class="item date">
@@ -30,6 +29,7 @@
     <div class="input-box">
       <label for="title">title</label>
       <input type="text" name="article_title" id="title" value="<?= $article->title;?>" placeholder="Article Title">
+      <p class="error" id="title-error"></p>
     </div>
     <div class="input-box">
       <label for="url-title" id="url-title-label">url title</label>
@@ -40,12 +40,13 @@
       <div class="input-box type">
         <label for="type">type</label>
         <input type="text" name="type" id="type" value="<?= $article->tag;?>" placeholder="article type">
+        <p class="error" id="type-error"></p>
       </div>
       <div class="input-box">
         <label for="publish">publish</label>
         <?php $i = [["icon" => "fa-eye-slash", "class" => "btn-danger"], ["icon" => "fa-eye", "class" => "btn-primary"]];?>
         <?php $active = $article->active == 1 ? 1: 0;?>
-        <button class="btn <?= $i[$active]["class"];?>" type="button" data-value="<?= $active;?>" id="publish">public <i id="public-icon" class="fa-solid <?= $i[$active]["icon"];?>"></i></button>
+        <button class="btn <?= $i[$active]["class"];?>" type="button" id="publish">public <i id="public-icon" class="fa-solid <?= $i[$active]["icon"];?>"></i></button>
         <input class="d-none" type="hidden" name="active" id="public-value" value="<?= $active;?>" />
       </div>
     </div>
@@ -58,6 +59,7 @@
   <div class="form row">
     <div class="input-box">
       <label for="content">content</label>
+      <p class="error" id="content-error"></p>
       <div class="content" id="content"></div>
       <button type="button" class="btn btn-success" id="save-content">save <i class="fa-solid fa-floppy-disk"></i></button>
     </div>

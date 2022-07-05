@@ -21,13 +21,10 @@ function customAlert(text) {
 }
 
 function showError(element, error) {
-  const errors = [
-    "The url must be unique, this url-title has been used before.",
-  ];
-  $(`#${element}`).parentElement.classList.add("is-wrong");
-  let msg = $(`#${element}-error`);
-  msg.innerHTML = errors[error - 1];
-  $(`#${element}-label`).scrollIntoView({
+  let parent = $(`#${element}`).parentElement;
+  parent.classList.add("is-wrong");
+  $(`#${element}-error`).innerHTML = error;
+  parent.scrollIntoView({
     behavior: 'smooth'
   });
 
@@ -42,6 +39,110 @@ function removeErrors() {
     });
   }
   customAlert("done successfuly");
+}
+
+function deleteItemConfirm(type, id, token, element) {
+  
+  let container = document.createElement("div");
+  container.classList.add("relative-container");
+
+  let overlay = document.createElement("div");
+  overlay.classList.add("overlay", "animate__animated", "animate__fadeInUp");
+  overlay.addEventListener("click", function () {
+    this.parentElement.remove();
+  });
+
+  let model = document.createElement("div");
+  model.classList.add("model");
+
+  let title = document.createElement("h3");
+  title.classList.add("title");
+  title.innerHTML = "Are you sure you want to delete this course?";
+
+  let btnContainer = document.createElement("div");
+  btnContainer.classList.add("btn-container");
+  
+  let yes = document.createElement("button");
+  yes.classList.add("btn", "btn-danger");
+  yes.innerHTML = "delete <i class=\"fa fa-trash\"></i>";
+
+  yes.addEventListener("click", function () {
+    deleteItem(type, id, token, element);
+    this.parentElement.parentElement.parentElement.remove();
+  });
+
+  let no = document.createElement("button");
+  no.classList.add("btn", "btn-primary");
+  no.innerHTML = "cancel <i class=\"fa-solid fa-arrow-left\"></i>";
+  
+  no.addEventListener("click", function () {
+    this.parentElement.parentElement.parentElement.remove();
+  });
+
+  model.append(title);
+  btnContainer.append(no);
+  btnContainer.append(yes);
+  model.append(btnContainer);
+  container.append(overlay);
+  container.append(model);
+  document.body.append(container);
+
+}
+
+function deleteItem(type, id, token, element) {
+  const items = ["article", "course"];
+  let form = new FormData();
+  form.append("action", "delete");
+  form.append("token", token);
+  form.append(`${items[type]}_id`, id);
+  fetch(`http://drnofal.test/api/${items[type]}`, {
+    method: "POST",
+    body: form,
+  }).then(res=>res.text())
+    .then(function (data) {
+      let response = JSON.parse(data);
+
+      let parent = element.parentElement.parentElement;
+      if (response.success) {
+        parent.classList.add("animate__fadeOut");
+        setTimeout(() => {
+          parent.remove();
+        }, 1300);
+      }else {
+        parent.classList.add("error");
+        setTimeout(() => {
+          parent.classList.remove("error");
+        }, 1500);
+      }
+
+  });
+
+}
+
+function savingCourse(courseId) {
+
+  let form = new FormData($("form"));
+  form.append("action", "update");
+  form.append("course_id", courseId);
+  fetch("http://drnofal.test/api/course", {
+    method: "POST",
+    body: form,
+  }).then(res=>res.text())
+    .then(function (data) {
+      let response = JSON.parse(data);
+      if (response.success) {
+        removeErrors();
+      }else {
+        if (Object.entries(response.errors).length > 0) {
+          console.log(response.errors);
+          for(const [errName, errVal] of Object.entries(response.errors)) {
+            console.log(`${errName}: ${errVal}`);
+            showError(errName, errVal);
+          }
+        }
+      }
+  });
+
 }
 
 function savingData(editor, token, articleId) {
@@ -61,9 +162,11 @@ function savingData(editor, token, articleId) {
         if (response.success) {
           removeErrors();
         }else {
-          if (response.error == "1") {
-            // error 1 => duplicate entry
-            showError("url-title", response.error);
+          console.log(response.errors);
+          if (Object.keys(response.errors).length > 0) {
+            for (const [errName, errVal] of Object.entries(response.errors)) {
+              showError(errName, errVal);
+            }
           }
         }
     });
@@ -111,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if ($("#content")) {
     const TOKEN = $("#token").value;
-    const articleId = $("#article_id").value;
+    const articleId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, article, 3]
     let trigger = true;
 
     getContent(TOKEN, articleId).then(text =>{
@@ -172,11 +275,27 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    let i = 0;
-    let icon = $("#public-icon");
+  }
+
+  if ($("#course")) {
+    const CourseId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, course, 3]
+    let trigger = true;
+    $("#save-info").addEventListener("click", function (e) {
+      if (trigger) {
+        trigger = false;
+        setTimeout(() => {
+          trigger = true;
+        }, 3000);
+        savingCourse(CourseId);
+      }
+    });
+  }
+
+  if ($("#publish")) {
     let publicInput = $("#public-value");
+    let icon = $("#public-icon");
+    let i = publicInput.value == 1 ? 1: 0;
     $("#publish").addEventListener("click", function () {
-      i = this.dataset.value == 1 ? 1: 0;
       if (i == 0) {
         i = 1;
       }else {
@@ -188,8 +307,31 @@ document.addEventListener('DOMContentLoaded', function() {
       icon.classList.toggle("fa-eye-slash");
       icon.classList.toggle("fa-eye");
     });
+  }
 
+  if ($("#manage-table")) {
+    let table = $("#manage-table");
+    const type = table.dataset.type;
+    $(".btn-remove-item").forEach(btn => {
+      const id = btn.dataset.id;
+      let trigger = true;
+      btn.addEventListener("click", function (e) {
+        if (trigger) {
+
+          trigger = false;
+          setTimeout(() => {
+            trigger = true;
+          }, 2500);
+
+          if (type == 1) {
+            deleteItemConfirm(1, id, table.dataset.token, this);
+          }else {
+            deleteItemConfirm(0, id, table.dataset.token, this);
+          }
+
+        }
+      })
+    });
   }
 
 });
-

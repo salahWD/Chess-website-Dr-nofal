@@ -14,18 +14,75 @@
     public $content;
     public $likes;// likes count
 
+    private function isJson($string) {
+      json_decode($string);
+      return json_last_error() === JSON_ERROR_NONE;
+    }
+
     public function set($data) {
       include_once CLASS_PATH . "formvalidate.php";
+      $errors = [];
+      $this->id = Form::valid_int($data["article_id"] ?? null);
       
-      $this->id           = Form::valid_int($data["article_id"] ?? null);
-      $this->title        = Form::valid_str($data["article_title"] ?? "");
-      $url_title          =  isset($data["url_title"]) && !empty($data["url_title"]) ? $data["url_title"] : $data["article_title"];
-      $this->url_title    = Form::valid_url_title($url_title);
-      $this->tag          = Form::valid_str($data["type"] ?? "");
-      $this->description  = Form::valid_str($data["description"] ?? "");
-      $this->image        = $data["image"] ?? null;
-      $this->content      = $data["content"] ?? "";
-      $this->active       = isset($data["active"]) && intval($data["active"]) === 1 ? 1: 0;
+      if (isset($data["article_title"]) && is_string($data["article_title"])) {
+        if (strlen($data["article_title"]) > 4) {
+          $this->title = Form::valid_str($data["article_title"] ?? "");
+        }else {
+          $errors["title"] = "title can't be less than 5 character";
+        }
+      }
+
+      $url_title = isset($data["url_title"]) && !empty($data["url_title"]) ? $data["url_title"] : $data["article_title"];
+      if (is_string($url_title)) {
+        if (strlen($url_title) > 4) {
+          $this->url_title = Form::valid_url_title($url_title);
+        }else {
+          $errors["url-title"] = "url-title can't be less than 5 character";
+        }
+      }
+
+      if (isset($data["type"]) && is_string($data["type"])) {
+        if (strlen($data["type"]) > 2) {
+          $this->tag = Form::valid_str($data["type"]);
+        }else {
+          $errors["type"] = "type can't be less than 3 character";
+        }
+      }
+
+      if (isset($data["description"]) && is_string($data["description"])) {
+        $this->description = Form::valid_str($data["description"]);
+      }else {
+        $this->description = null;
+      }
+
+      if (isset($data["image"]) && !empty($data["image"])) {
+        $image = Form::valid_image($data["image"]);
+        if ($image["success"]) {
+          $this->image = $image["info"];// data = ["new_name", "tmp_name"]
+        }else {
+          $errors["image"] = $image["errors"];// error code 3
+        }
+      }
+
+      if (isset($data["content"]) && $this->isJson($data["content"])) {
+        $this->content = $data["content"];
+      }
+
+      $this->active = isset($data["active"]) && intval($data["active"]) === 1 ? 1: 0;
+
+      $info = [
+				"title" 			=> $data["article_title"],
+				"url_title" 	=> $data["url_title"],
+				"type" 				=> $data["type"],
+				"description" => $data["description"],
+			];
+
+      if (count($errors) > 0) {
+        return ["success" => false, "errors" => $errors, "info_holder" => $info];
+      }else {
+        return ["success" => true];
+      }
+
     }
 
     public function insert($writer_id) {
@@ -52,7 +109,7 @@
         $params_array[":content"] = $this->content;
       }
 
-      $sql = $db->prepare("SELECT id from articles WHERE url_title = ?");
+      $sql = $db->prepare("SELECT id FROM articles WHERE url_title = ?");
       $sql->execute([$this->url_title]);
 
       if ($sql->rowCount() == 0) {
@@ -62,10 +119,10 @@
         if ($result) {
           return ["success" => true, "id" => $db->lastInsertId()];
         }else {
-          return false;
+          return ["success" => false];
         }
       }else {
-        return ["success" => false, "error" => 1];// duplicate entry [error => 1]
+        return ["success" => false, "error" => ["url-title" => "there is another article with the same utl-title"]];// duplicate entry [error => 1]
       }
 
     }
@@ -98,9 +155,17 @@
         return ["success" => $result];
 
       }else {
-        return ["success" => false, "error" => 1];// duplicate entry [error => 1]
+        return ["success" => false, "error" => "this url-title is used before!"];// duplicate entry [error => 1]
       }
 
+    }
+
+    public static function delete($id) {
+      $db = DB::get_instance();
+  
+      $sql = $db->prepare("DELETE FROM articles WHERE id = ?");
+      $res = $sql->execute([$id]);
+      return ["success" => $res];
     }
 
     public static function get_article($id) {
@@ -131,6 +196,50 @@
         return ["success" => false, "content" => "", "error" => "2"];
       }
     }
+
+    public static function get_errors_session() {
+      $errors = null;
+      if (isset($_SESSION["article/errors"])) {
+        $errors = $_SESSION["article/errors"];
+        unset($_SESSION["article/errors"]);
+      }
+      if ($errors != null && is_array($errors) && count($errors) > 0) {
+        return $errors;
+      }else {
+        return null;
+      }
+    }
+  
+    public static function set_errors_session($data) {
+      if (isset($_SESSION["article/errors"])) {
+        unset($_SESSION["article/errors"]);
+      }
+      $_SESSION["article/errors"] = $data;
+      return true;
+    }
+    
+    public static function get_info_holder_session() {
+      $info = null;
+      if (isset($_SESSION["article/info"])) {
+        $info = $_SESSION["article/info"];
+        unset($_SESSION["article/info"]);
+      }
+      if ($info != null && is_array($info) && count($info) > 0) {
+        return $info;
+      }else {
+        return null;
+      }
+    }
+  
+    public static function set_info_holder_session($data) {
+      if (isset($_SESSION["article/info"])) {
+        unset($_SESSION["article/info"]);
+      }
+      $_SESSION["article/info"] = $data;
+      return true;
+    }
+
+
 
   }
 ?>

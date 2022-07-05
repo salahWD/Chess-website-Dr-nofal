@@ -23,25 +23,27 @@
 <div class="row">
   <div class="articles items-box">
     <h2 class="title">manage all articles</h2>
-    <div class="table">
+    <div class="table" id="manage-table" data-type="0" data-token="<?= $token;?>">
       <div class="header">
         <h3 class="title">title</h3>
         <h3 class="title">create date</h3>
         <h3 class="title">status</h3>
         <h3 class="title">actions</h3>
       </div>
-      <?php foreach($articles as $article):?>
-        <div class="item article">
-          <p class="cell"><?= $article->title;?></p>
-          <p class="cell"><?= $article->date;?></p>
-          <?php $status = ["unpublish", "public"];?>
-          <p class="cell"><?= $status[$article->active];?></p>
-          <div class="cell">
-            <a href="<?= Router::route("dashboard/article/$article->id");?>" class="btn btn-primary">edit</a>
-            <a href="<?= Router::route("dashboard/article/delete");?>" class="btn btn-danger">delete</a>
+      <?php if (is_array($articles) && count($articles) > 0):?>
+        <?php foreach($articles as $article):?>
+          <div class="item article animate__animated">
+            <p class="cell"><?= $article->title;?></p>
+            <p class="cell"><?= $article->date;?></p>
+            <?php $status = ["unpublish", "public"];?>
+            <p class="cell"><?= $status[$article->active];?></p>
+            <div class="cell">
+              <a href="<?= Router::route("dashboard/article/$article->id");?>" class="btn btn-primary">edit</a>
+              <button type="button" data-id="<?= $article->id;?>" class="btn btn-danger btn-remove-item">delete</button>
+            </div>
           </div>
-        </div>
-      <?php endforeach;?>
+        <?php endforeach;?>
+      <?php endif;?>
     </div>
   </div>
 </div>

@@ -17,6 +17,6 @@
       <textarea type="text" name="description" id="description" placeholder="write a short description"><?= $info_holder["description"] ?? "";?></textarea>
       <p class="error"><?= $errors["description"] ?? "";?></p>
     </div>
-    <button type="submit" name="create" class="btn btn-success" id="save-info">save <i class="fa-solid fa-floppy-disk"></i></button>
+    <button type="submit" name="action" value="create" class="btn btn-success" id="save-info">save <i class="fa-solid fa-floppy-disk"></i></button>
   </div>
 </form>

@@ -38,7 +38,7 @@ $dangerB: #dc3545;
     .input-box {
       flex-basis: content;
       flex-grow: 1;
-      &.type {
+      &.type, &.price {
         flex-grow: 3;
       }
     }
@@ -128,8 +128,9 @@ $dangerB: #dc3545;
       border-radius: 0;
       font-size: 16px;
       width: 100%;
-      min-height: 90px;
-      max-height: 120px;
+      min-height: 140px;
+      max-height: 200px;
+      overflow: hidden;
       resize: vertical;
       &:active {
         border-color: var(--global-color-primary);

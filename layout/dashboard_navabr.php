@@ -15,13 +15,13 @@
         <span class="title">articles</span>
       </li>
     </a>
-    <a href="<?= Router::route("dashboard/courses");?>" <?= isset($page) && str_contains($page, "/courses") ? 'class="active"': '';?>>
+    <a href="<?= Router::route("dashboard/courses");?>" <?= isset($page) && str_contains($page, "/course") ? 'class="active"': '';?>>
       <li>
         <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
         <span class="title">courses</span>
       </li>
     </a>
-    <a href="<?= Router::route("dashboard/users");?>" <?= isset($page) && str_contains($page, "/users") ? 'class="active"': '';?>>
+    <a href="<?= Router::route("dashboard/users");?>" <?= isset($page) && str_contains($page, "/user") ? 'class="active"': '';?>>
       <li>
         <span class="icon"><i class="fa-solid fa-users"></i></span>
         <span class="title">users</span>

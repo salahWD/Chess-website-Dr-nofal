@@ -39,12 +39,6 @@ body {
     background-color: #d4edda;
     border-color: #c3e6cb;
   }
-}
-.dashboard {
-  justify-content: flex-end;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
   .btn {
     padding: 8px 12px;
     border-radius: 5px;
@@ -74,6 +68,63 @@ body {
       }
     }
   }
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0.3;
+      -webkit-transform: translate3d(0,-100%,0);
+      transform: translate3d(0,-100%,0)
+    }to {
+      opacity: 0.65;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0)
+    }
+  }
+  .relative-container {
+    position: relative; 
+    .overlay {
+      animation-duration: 0.5s;
+      background-color: black;
+      position: fixed;
+      z-index: 10;
+      height: 150%;
+      content: "";
+      width: 150%;
+      left: 0;
+      top: 0;
+    }
+    .model {
+      border: 1px solid var(--global-color-text-dark);
+      background: var(--global-color-white);
+      transform: translate(-50%, -50%);
+      text-align: center;
+      border-radius: 5px;
+      padding: 20px 28px;
+      min-width: 400px;
+      max-width: 720px;
+      position: fixed;
+      z-index: 11;
+      left: 50%;
+      top: 50%;
+      .title {
+        font-size: 22px;
+        font-family: var(--global-font-sec);
+        font-weight: normal;
+        margin-bottom: 32px;
+      }
+      .btn-container {
+        justify-content: space-around;
+        align-items: center;
+        column-gap: 20px;
+        display: flex;
+      }
+    }
+  }
+}
+.dashboard {
+  justify-content: flex-end;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
   .navbar {
     background-color: var(--global-color-black);
     transition: left 0.3s ease-in-out;
@@ -128,7 +179,6 @@ body {
           height: 60px;
           position: relative;
           opacity: 1;
-          
           z-index: 2;
           .title {
             font-family: var(--global-font-sec);
@@ -359,6 +409,14 @@ body {
           align-items: center;
           border-radius: 5px;
           transition: background-color 0.2s;
+          border: 1px solid transparent;
+          &.animate__animated {
+            opacity: 1;
+          }
+          &.error {
+            background-color: #f8dfe1 !important;
+            border: 1px solid #f5c6cb !important;
+          }
           &:hover {
             background-color: var(--global-color-bg);
           }
@@ -445,7 +503,10 @@ body {
         }
       }
     }
-    .articles {
+    .items-box > .title {
+      padding-left: 20px;
+    }
+    .articles, .courses {
       width: 100%;
       .table {
         --table-cols: calc((100% / 6) * 3) calc(100% / 6) calc(100% / 6) calc(100% / 6);

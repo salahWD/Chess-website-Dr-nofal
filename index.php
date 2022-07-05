@@ -60,8 +60,16 @@ $router->get_admin("/dashboard", function () {
 });
 $router->get_admin("/dashboard/articles", function () {
 	include_once MODELS_PATH . "blog.php";
+	include_once MODELS_PATH . "admin.php";
+
+	$token = Admin::get_admin_session("token");
 	$articles = Blog::get_all_article();
-	Template::admin_view("dashboard/articles", 3, ["custom_style" => "dashboard.css", "articles" => $articles]);
+
+	Template::admin_view("dashboard/articles", 3, [
+		"custom_style" => "dashboard.css",
+		"articles" => $articles,
+		"token" => $token
+	]);
 });
 $router->get_admin("/dashboard/article/{id}", function ($args) {
 	include_once MODELS_PATH . "article.php";
@@ -76,26 +84,33 @@ $router->get_admin("/dashboard/article/{id}", function ($args) {
 $router->get_admin("/dashboard/article/create", function ($args) {
 	
 	include_once MODELS_PATH . "admin.php";
-	$token = Admin::get_admin_session("token");
+	include_once MODELS_PATH . "article.php";
 	
+	$token 		= Admin::get_admin_session("token");
+	$errors 	= Article::get_errors_session();
+	$info 		= Article::get_info_holder_session();
+
 	Template::admin_view("dashboard/article/create", 3, [
 		"custom_style" => "dashboard.css",
 		"token" 		=> $token,
-		"article" 	=> $_SESSION["article/info"] ?? "",
-		"errors" 		=> $_SESSION["article/error"] ?? "",
+		"article" 	=> $info,
+		"errors" 		=> $errors,
 	]);
-	if (isset($_SESSION["article/error"])) {
-		unset($_SESSION["article/error"]);
-	}
-	if (isset($_SESSION["article/info"])) {
-		unset($_SESSION["article/info"]);
-	}
 
 });
 $router->get_admin("/dashboard/courses", function () {
+
 	include_once MODELS_PATH . "course.php";
+	include_once MODELS_PATH . "admin.php";
+
 	$courses = Course::get_all_courses();
-	Template::admin_view("dashboard/courses", 3, ["custom_style" => "dashboard.css", "courses" => $courses]);
+	$token = Admin::get_admin_session("token");
+
+	Template::admin_view("dashboard/courses", 3, [
+		"custom_style" => "dashboard.css",
+		"courses" => $courses,
+		"token" => $token
+	]);
 });
 $router->get_admin("/dashboard/course/{id}", function ($args) {
 
@@ -112,8 +127,8 @@ $router->get_admin("/dashboard/course/{id}", function ($args) {
 			"token" => $token
 		]);
 	}else {
-		// header("HTTP/1.0 404 Not Found");
-		// header("Location: " . Router::route("404"));
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
 	}
 
 });
@@ -178,42 +193,61 @@ $router->post("/api/article", function ($args) {
 	include_once CLASS_PATH . "permissionscheck.php";
 
 	$request = PermissionsCheck::is_valid_api_request($args, ["create", "get_content", "delete", "update"]);
-
 	if ($request["success"]) {
 
 		include MODELS_PATH . "article.php";
 		
 		$model = new Article();
 		$action = $request["action"];
-		// $admin = Admin::get_admin_session();
 		
 		if ($action == "create") {
 
-			$model->set($args);
-			// $result = $admin->create_article($args);
-			$result = $model->insert($request["id"]);
+			$result = $model->set($args);
 
 			if ($result["success"]) {
-				header("Location: " . Router::route("dashboard/article/" . $result["id"]));
-				exit();
+				$inserted = $model->insert($request["id"]);
+				if ($inserted["success"]) {
+					header("Location: " . Router::route("dashboard/article/" . $inserted["id"]));
+					exit();
+				}else {
+					Article::set_errors_session($inserted["error"]);
+				}
 			}else {
-				unset($_SESSION["article/info"]);
-				unset($_SESSION["article/error"]);
-				$_SESSION["article/info"] 	= $model;
-				$_SESSION["article/error"] 	= $result["error"];
-				header("Location: " . Router::route("dashboard/article/create"));
-				exit();
+				Article::set_errors_session($result["errors"]);
 			}
+			Article::set_info_holder_session($result["info_holder"]);
+			header("Location: " . Router::route("dashboard/article/create"));
+			// $result = $admin->create_article($args);// the request coming from admin class to article class automaticly
+
 		}else if ($action == "get_content") {
 			$content = Article::get_content($args["article_id"]);
 			echo json_encode(["success" => $content["success"], "content" => $content["content"] ?? "", "error" => $content["error"] ?? ""]);
 		}else if ($action == "update") {
-			$model->set($args);
-			$result = $model->save();
-			echo json_encode(["success" => $result["success"], "error" => $result["error"] ?? ""]);
+
+			$result = $model->set($args);
+			if ($result["success"]) {
+				$inserted = $model->save();
+				echo json_encode(["success" => $inserted["success"], "errors" => $inserted["error"] ?? null]);
+			}else {
+				echo json_encode($result);
+			}
+
+		}else if ($action == "delete") {
+			
+			if (isset($args["article_id"]) && is_numeric(intval($args["article_id"])) && intval($args["article_id"]) > 0) {
+				echo json_encode(Article::delete(intval($args["article_id"])));
+			}else {
+				echo json_encode(["success" => false]);
+			}
+			exit();
+
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
 		}
 
 		exit();
+
 	}else {
 		header("HTTP/1.0 404 Not Found");
 		header("Location: " . Router::route("404"));
@@ -224,7 +258,6 @@ $router->post("/api/article", function ($args) {
 $router->post("/api/course", function ($args) {
 
 	include_once CLASS_PATH . "permissionscheck.php";
-
 	$request = PermissionsCheck::is_valid_api_request($args, ["create", "delete", "update"]);
 
 	if ($request["success"]) {// checks for token and admin request action
@@ -246,27 +279,43 @@ $router->post("/api/course", function ($args) {
 				if ($inserted["success"]) {
 					header("Location: " . Router::route("dashboard/course/" . $inserted["id"]));
 					exit();
+				}else {
+					Course::set_errors_session($inserted["error"]);
 				}
-				
 			}else {
-
 				Course::set_errors_session($result["errors"]);
-				Course::set_info_holder_session($result["info_holder"]);
+			}
+			Course::set_info_holder_session($result["info_holder"]);
+			header("Location: " . Router::route("dashboard/course/create"));
+			exit();
 
+		}else if ($action == "update") {
+
+			$result = $model->set($args);
+			
+			if ($result["success"]) {
+				$saved = $model->save();
+				echo json_encode($saved);
+			}else {
+				echo json_encode(["success" => false, "errors" => $result["errors"]]);
 			}
 
-			header("Location: " . Router::route("dashboard/course/create"));
+		}else if ($action == "delete") {
 
-		}/* else if ($action == "get_content") {
-		}else if ($action == "update") {
-		} */
+			if (isset($args["course_id"]) && is_numeric(intval($args["course_id"])) && intval($args["course_id"]) > 0) {
+				echo json_encode(Course::delete(intval($args["course_id"])));
+			}else {
+				echo json_encode(["success" => false]);
+			}
+			exit();
 
-		exit();
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
+		}
 	}else {
-		echo "<h1>no token or action</h1>";
-		// header("HTTP/1.0 404 Not Found");
-		// header("Location: " . Router::route("404"));
-		exit();
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
 	}
 
 });
