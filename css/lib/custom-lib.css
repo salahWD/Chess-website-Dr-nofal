@@ -124,6 +124,9 @@ iframe.seamless {
 .text-center {
   text-align: center !important;
 }
+.d-none {
+  display: none;
+}
 .c-p {
   color: var(--global-color-primary) !important;
 }

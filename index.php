@@ -55,8 +55,13 @@ $router->get("/contact", function () {
 	Template::view("contact", 3, ["custom_style" => "contact.css"]);
 });
 $router->get_admin("/dashboard", function () {
-	include_once MODELS_PATH . "admin.php";
-	Template::admin_view("dashboard/index", 3, ["custom_style" => "dashboard.css"]);
+	include_once MODELS_PATH . "comment.php";
+	include_once MODELS_PATH . "user.php";
+	Template::admin_view("dashboard/index", 3, [
+		"custom_style" 	=> "dashboard.css",
+		"comments" 			=> Comment::get_recent_comments(6),
+		"users" 				=> User::get_recent_users(6),
+	]);
 });
 $router->get_admin("/dashboard/articles", function () {
 	include_once MODELS_PATH . "blog.php";
@@ -150,6 +155,50 @@ $router->get_admin("/dashboard/course/create", function ($args) {
 	]);
 
 });
+$router->get_admin("/dashboard/users", function () {
+
+	include_once MODELS_PATH . "admin.php";
+	include_once MODELS_PATH . "user.php";
+
+	$token = Admin::get_admin_session("token");
+	$users = User::get_users();
+
+	Template::admin_view("dashboard/users", 3, [
+		"custom_style" => "dashboard.css",
+		"token" => $token,
+		"users" => $users,
+	]);
+
+});
+$router->get_admin("/dashboard/user/{id}", function ($args) {
+
+	include_once MODELS_PATH . "admin.php";
+	include_once MODELS_PATH . "user.php";
+
+	$token = Admin::get_admin_session("token");
+	$user = User::get_user($args["id"]);
+
+	if ($user != false) {
+		Template::admin_view("dashboard/users/edit", 3, [
+			"custom_style" => "dashboard.css",
+			"user" => $user,
+			"token" => $token
+		]);
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
+	}
+
+});
+$router->get_admin("/admin/profile", function ($args) {
+
+	include_once MODELS_PATH . "admin.php";
+
+	$admin = Admin::get_admin_session();
+
+	Template::admin_view("dashboard/admin_profile", 3, ["custom_style" => "dashboard.css", "admin" => $admin]);
+
+});
 $router->get("/dashboard/login", function () {
 	
 	if (isset($_SESSION["admin"]) && !empty($_SESSION["admin"])) {
@@ -186,6 +235,35 @@ $router->post("/dashboard/login", function ($args) {
 		header("Location: " . Router::route("dashboard/login"));
 	}
 	exit();
+
+});
+$router->post("/admin/profile", function ($args) {
+
+	include_once MODELS_PATH . "admin.php";
+	
+	if (Admin::isset_admin_session()) {
+		$admin = new Admin();
+		$admin->set_id(Admin::get_admin_session("id"));
+		$result = $admin->set_data($args);
+		if ($result["success"]) {
+			$saved = $admin->save();
+			if ($saved["success"]) {
+				Admin::set_admin_session(Admin::get_admin_db($admin->get_id()));
+				header("Location: " . Router::route("admin/profile"));
+				exit();
+			}else {
+				echo json_encode($saved);
+				exit();
+			}
+		}else {
+			echo json_encode($result);
+			exit();
+		}
+
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
+	}
 
 });
 $router->post("/api/article", function ($args) {
@@ -304,6 +382,48 @@ $router->post("/api/course", function ($args) {
 
 			if (isset($args["course_id"]) && is_numeric(intval($args["course_id"])) && intval($args["course_id"]) > 0) {
 				echo json_encode(Course::delete(intval($args["course_id"])));
+			}else {
+				echo json_encode(["success" => false]);
+			}
+			exit();
+
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
+	}
+
+});
+$router->post("/api/user", function ($args) {
+
+	include_once CLASS_PATH . "permissionscheck.php";
+	$request = PermissionsCheck::is_valid_api_request($args, ["delete", "update"]);
+
+	if ($request["success"]) {// checks for token and admin request action
+
+		include MODELS_PATH . "user.php";
+		
+		$model = new User();
+		$action = $request["action"];
+		
+		if ($action == "update") {
+
+			$result = $model->set($args);
+			
+			if ($result["success"]) {
+				$saved = $model->save();
+				echo json_encode($saved);
+			}else {
+				echo json_encode(["success" => false, "errors" => $result["errors"]]);
+			}
+
+		}else if ($action == "delete") {
+
+			if (isset($args["user_id"]) && is_numeric(intval($args["user_id"])) && intval($args["user_id"]) > 0) {
+				echo json_encode(User::delete(intval($args["user_id"])));
 			}else {
 				echo json_encode(["success" => false]);
 			}

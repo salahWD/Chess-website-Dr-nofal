@@ -43,6 +43,9 @@ body {
     padding: 8px 12px;
     border-radius: 5px;
     color: var(--global-color-white);
+    &.btn-circle {
+      border-radius: 50%;
+    }
     &.btn-danger {
       background-color: $dangerC;
       border: 1px solid $dangerB;
@@ -68,7 +71,7 @@ body {
       }
     }
   }
-  @keyframes fadeInUp {
+  @keyframes fadeInUpOverlay {
     0% {
       opacity: 0.3;
       -webkit-transform: translate3d(0,-100%,0);
@@ -82,6 +85,7 @@ body {
   .relative-container {
     position: relative; 
     .overlay {
+      animation: fadeInUpOverlay 0.5s ease-in-out;
       animation-duration: 0.5s;
       background-color: black;
       position: fixed;
@@ -273,6 +277,7 @@ body {
           border-radius: 5px;
           right: 10px;
           animation-duration: 0.35s;
+          z-index: 1;
           animation-name: fadeOutUpMenu;
           &.active {
             animation-name: none;
@@ -351,6 +356,14 @@ body {
         .icon {
           font-size: 60px;
           color: var(--global-color-text-dark);
+          &.comment,
+          &.like {
+            color: #e04653;
+          }
+          &.writed,
+          &.user {
+            color: #27a2d7;
+          }
         }
         &.create {
           color: white;
@@ -373,15 +386,18 @@ body {
         }
       }
     }
+    .title {
+      font-size: 24px;
+      font-family: var(--global-font-sec);
+      margin-bottom: 22px;
+      color: var(--global-color-primary);
+    }
     .items-box {
       box-shadow: $box-shadow;
       border-radius: 15px;
       padding: 15px 20px;
-      .title {
-        font-size: 24px;
-        font-family: var(--global-font-sec);
-        margin-bottom: 22px;
-        color: var(--global-color-primary);
+      & > .title {
+        padding-left: 20px;
       }
       .table {
         flex-direction: column;
@@ -424,6 +440,7 @@ body {
             position: relative;
             .image {
               width: 45px;
+              height: 45px;
               padding: 0;
               margin: 0;
               img {
@@ -454,7 +471,7 @@ body {
       .comments-box {
         width: calc((100% / 3) * 2);
         .table {
-          --table-cols: calc(100% / 7) calc((100% / 7) * 1.7) calc((100% / 7) * 3.3) calc(100% / 7);
+          --table-cols: calc(100% / 9) calc((100% / 9) * 2) calc((100% / 9) * 3) calc((100% / 9) * 3);
         }
       }
       .users-box {
@@ -476,7 +493,8 @@ body {
               object-position: center center;
               object-fit: cover;
               max-width: 45px;
-              height: 45px;
+              max-height: 45px;
+              height: 100%;
               width: 100%;
               img {
                 border-radius: 50%;
@@ -503,13 +521,17 @@ body {
         }
       }
     }
-    .items-box > .title {
-      padding-left: 20px;
-    }
     .articles, .courses {
       width: 100%;
       .table {
         --table-cols: calc((100% / 6) * 3) calc(100% / 6) calc(100% / 6) calc(100% / 6);
+      }
+    }
+    .users {
+      width: 100%;
+      .table {
+        width: 100%;
+        --table-cols: calc(100% / 11) calc((100% / 11) * 3) calc((100% / 11) * 3) calc((100% / 11) * 2) calc((100% / 11) * 2);
       }
     }
   }

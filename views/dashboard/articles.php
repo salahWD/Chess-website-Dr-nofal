@@ -1,17 +1,18 @@
+<h2 class="title">Last Month Analytics</h2>
 <div class="show-cards row">
   <div class="card created">
     <div class="info">
       <h3 class="number">12</h3>
       <p class="title">created articles</p>
     </div>
-    <div class="icon"><i class="fa-solid fa-file-signature"></i></div>
+    <div class="icon writed"><i class="fa-solid fa-file-signature"></i></div>
   </div>
   <div class="card avg-like">
     <div class="info">
       <h3 class="number">17</h3>
       <p class="title">avrage likes</p>
     </div>
-    <div class="icon"><i class="fa-solid fa-heart"></i></div>
+    <div class="icon like"><i class="fa-solid fa-heart"></i></div>
   </div>
   <a class="card create" href="<?= Router::route("dashboard/article/create");?>">
     <div class="info">

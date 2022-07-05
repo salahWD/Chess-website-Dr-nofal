@@ -9,7 +9,7 @@ function $(element) {
   }
 }
 
-function customAlert(text) {
+function customAlert(text, time) {
   let ele = document.createElement("div");
   ele.classList.add("alert", "alert-success", "animate__animated", "animate__fadeInDown");
   ele.innerHTML = text;
@@ -17,7 +17,7 @@ function customAlert(text) {
   setTimeout(() => {
     ele.classList.remove("animate__fadeInDown");
     ele.classList.add("animate__fadeOutUp");
-  }, 1500);
+  }, time);
 }
 
 function showError(element, error) {
@@ -30,7 +30,7 @@ function showError(element, error) {
 
 }
 
-function removeErrors() {
+function removeErrors(url) {
   let errors = document.querySelectorAll(".is-wrong");
   if (errors.length > 0) {
     console.log(errors);
@@ -38,7 +38,10 @@ function removeErrors() {
       err.classList.remove("is-wrong");
     });
   }
-  customAlert("done successfuly");
+  customAlert("done successfuly", 1100);
+  setTimeout(() => {
+    window.location.href = url;
+  }, 1400);
 }
 
 function deleteItemConfirm(type, id, token, element) {
@@ -90,7 +93,7 @@ function deleteItemConfirm(type, id, token, element) {
 }
 
 function deleteItem(type, id, token, element) {
-  const items = ["article", "course"];
+  const items = ["article", "course", "user"];
   let form = new FormData();
   form.append("action", "delete");
   form.append("token", token);
@@ -131,7 +134,7 @@ function savingCourse(courseId) {
     .then(function (data) {
       let response = JSON.parse(data);
       if (response.success) {
-        removeErrors();
+        removeErrors("http://drnofal.test/dashboard/courses");
       }else {
         if (Object.entries(response.errors).length > 0) {
           console.log(response.errors);
@@ -160,7 +163,7 @@ function savingData(editor, token, articleId) {
       .then(function (data) {
         let response = JSON.parse(data);
         if (response.success) {
-          removeErrors();
+          removeErrors("http://drnofal.test/dashboard/articles");
         }else {
           console.log(response.errors);
           if (Object.keys(response.errors).length > 0) {
@@ -171,6 +174,32 @@ function savingData(editor, token, articleId) {
         }
     });
     
+  });
+
+}
+
+function savingUser(userId) {
+
+  let form = new FormData($("form"));
+  form.append("action", "update");
+  form.append("user_id", userId);
+  
+  fetch("http://drnofal.test/api/user", {
+    method: "POST",
+    body: form,
+  }).then(res=>res.text())
+    .then(function (data) {
+      let response = JSON.parse(data);
+      if (response.success) {
+        removeErrors("http://drnofal.test/dashboard/users");
+      }else {
+        console.log(response.errors);
+        if (Object.keys(response.errors).length > 0) {
+          for (const [errName, errVal] of Object.entries(response.errors)) {
+            showError(errName, errVal);
+          }
+        }
+      }
   });
 
 }
@@ -210,8 +239,30 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log("clicked");
       e.stopPropagation();
     });
-  }
+  }// navbar activation
 
+  if ($("#change-image")) {
+    let btn = $("#change-image");
+    let inputCreated = false;
+    let image = $("#image");
+    let input = null;
+    btn.addEventListener("click", function () {
+      if (!inputCreated) {
+        input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("name", "image");
+        input.setAttribute("accept", "image/png, image/jpeg, image/webp, image/jpg");
+        input.classList.add("d-none");
+        btn.parentElement.append(input);
+        input.addEventListener("change", function () {
+          image.src = URL.createObjectURL(input.files[0]);
+        });
+        inputCreated = true;
+      }
+      input.click();
+    });
+  }// image input
+  
   if ($("#content")) {
     const TOKEN = $("#token").value;
     const articleId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, article, 3]
@@ -275,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-  }
+  }// edit article
 
   if ($("#course")) {
     const CourseId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, course, 3]
@@ -289,7 +340,21 @@ document.addEventListener('DOMContentLoaded', function() {
         savingCourse(CourseId);
       }
     });
-  }
+  }// edit course
+
+  if ($("#user")) {
+    const userId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, course, 3]
+    let trigger = true;
+    $("#save-info").addEventListener("click", function (e) {
+      if (trigger) {
+        trigger = false;
+        setTimeout(() => {
+          trigger = true;
+        }, 3000);
+        savingUser(userId);
+      }
+    });
+  }// edit user
 
   if ($("#publish")) {
     let publicInput = $("#public-value");
@@ -307,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
       icon.classList.toggle("fa-eye-slash");
       icon.classList.toggle("fa-eye");
     });
-  }
+  }// active status for articles courses
 
   if ($("#manage-table")) {
     let table = $("#manage-table");
@@ -323,15 +388,11 @@ document.addEventListener('DOMContentLoaded', function() {
             trigger = true;
           }, 2500);
 
-          if (type == 1) {
-            deleteItemConfirm(1, id, table.dataset.token, this);
-          }else {
-            deleteItemConfirm(0, id, table.dataset.token, this);
-          }
+          deleteItemConfirm(type, id, table.dataset.token, this);
 
         }
       })
     });
-  }
+  }// manage articles users and courses
 
 });

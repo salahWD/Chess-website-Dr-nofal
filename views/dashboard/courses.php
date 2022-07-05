@@ -1,10 +1,11 @@
+<h2 class="title">Last Month Analytics</h2>
 <div class="show-cards row">
   <div class="card created">
     <div class="info">
       <h3 class="number">4</h3>
       <p class="title">created courses</p>
     </div>
-    <div class="icon"><i class="fa-solid fa-book"></i></div>
+    <div class="icon course"><i class="fa-solid fa-book"></i></div>
   </div>
   <div class="card avg-like">
     <div class="info">

@@ -152,3 +152,31 @@ $dangerB: #dc3545;
     font-family: var(--global-font-sec);
   }
 }
+#user {
+  .info {
+    flex-direction: column;
+    align-items: center;
+    row-gap: 30px;
+    .image {
+      max-width: 100px;
+      position: relative;
+      img {
+        max-width: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center center;
+      }
+      .change-image {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transform: translateX(50%);
+      }
+    }
+    .details {
+      display: flex;
+      flex-direction: row;
+      column-gap: 60px;
+    }
+  }
+}

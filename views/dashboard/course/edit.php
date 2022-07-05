@@ -26,13 +26,13 @@
         <span class="text"><?= $arr[$course->active];?></span>
       </div>
     </div>
-    <div class="input-box <?= isset($errors["title"]) ? "is-wrong": "";?>">
+    <div class="input-box">
       <label for="title">title</label>
       <input type="text" name="course_title" id="title" placeholder="Course Title" value="<?= $course->title;?>" >
       <p class="error" id="title-error"></p>
     </div>
     <div class="input-container">
-      <div class="input-box price <?= isset($errors["price"]) ? "is-wrong": "";?>">
+      <div class="input-box price">
         <label for="price">price</label>
         <input type="number" name="price" id="price" value="<?= $course->price;?>" placeholder="course price" value="<?= $course->price;?>">
         <p class="error" id="price-error"></p>
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="input-box <?= isset($errors["description"]) ? "is-wrong": "";?>">
+    <div class="input-box">
       <label for="description">description</label>
       <textarea type="text" name="description" id="description" placeholder="write a short description"><?= $course->description;?></textarea>
       <p class="error" id="description-error"></p>
