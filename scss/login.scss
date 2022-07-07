@@ -8,61 +8,118 @@ $blackG: linear-gradient(
 .dashboard {
   padding: 0;
   margin: 0;
-  .login {
-    background-color: white;
-    padding: 60px 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-height: 100vh;
-    min-width: 100vw;
-    .title {
-      margin-bottom: 35px;
-      text-align: center;
-    }
-    &::before {
-      background-image: linear-gradient(170deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
-      transform: translateX(-50%);
-      border-radius: 50%;
-      position: absolute;
-      width: 70vh;
-      z-index: 1;
-      height: 70vh;
-      content: "";
-      left: 0;
-      top: calc((70vh / 5) * -1) ;
-    }
-    &::after {
-      background-image: linear-gradient(355deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
-      transform: translateX(50%);
-      border-radius: 50%;
-      position: absolute;
-      width: 70vh;
-      z-index: 1;
-      height: 70vh;
-      content: "";
-      right: 0;
-      bottom: calc((70vh / 5) * -1) ;
-    }
-    .container {
-      z-index: 2;
-      justify-content: center;
-      align-items: center;
+}
+.login {
+  background-color: white;
+  padding: 60px 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 100vh;
+  min-width: 100vw;
+  &.user {
+    padding-top: 200px;
+    background-color: var(--global-color-black);
+    .form-container {
+      transform: translateX(calc(-25%));
+      transition: left 0.7s ease-out;
+      position: relative;
+      column-gap: 150px;
       display: flex;
-    }
-    .form {
-      box-shadow: 0px 5px 10px 0px rgb(20 20 20 / 6%);
-      background-color: white;
-      min-width: 500px;
-      .row {
-        width: 100%;
+      width: 100%;
+      left: 50%;
+      &.active {
+        left: calc(150px / 2 * -1);
       }
-      .btn {
-        background-image: linear-gradient(170deg, #dfbb43 -10%, rgb(255, 132, 0) 120%);
-        border-radius: 6px;
-        display: block;
-        width: 100%;
+      .form {
+        position: relative;
+        flex-basis: 50%;
+        overflow: hidden;
+        border: none;
+        .toggle-btn {
+          transition: all 0.3s ease-out;
+          box-shadow: 0px 5px 10px 0px rgb(20 20 20 / 6%);
+          color: var(--global-color-black);
+          transform: translate(50%, -50%);
+          justify-content: center;
+          padding: 70px 80px 0 0;
+          align-items: center;
+          position: absolute;
+          border-radius: 50%;
+          height: 200px;
+          display: flex;
+          opacity: 0.5;
+          width: 200px;
+          border: none;
+          margin: 0;
+          right: 0;
+          top: 0;
+          &.right {
+            padding: 70px 0 0 80px;
+            transform: translate(-50%, -50%);
+            right: unset;
+            left: 0;
+          }
+          &:hover {
+            height: 230px;
+            width: 230px;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+  .title {
+    margin-bottom: 35px;
+    text-align: center;
+  }
+  &::before {
+    background-image: linear-gradient(170deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    position: absolute;
+    width: 70vh;
+    z-index: 1;
+    height: 70vh;
+    content: "";
+    left: 0;
+    top: calc((70vh / 5) * -1) ;
+  }
+  &::after {
+    background-image: linear-gradient(355deg, var(--global-color-primary) 0%, rgba(255,132,0,1) 100%);
+    transform: translateX(50%);
+    border-radius: 50%;
+    position: absolute;
+    width: 70vh;
+    z-index: 1;
+    height: 70vh;
+    content: "";
+    right: 0;
+    bottom: calc((70vh / 5) * -1) ;
+  }
+  .container {
+    z-index: 2;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+  .form {
+    box-shadow: 0px 5px 10px 0px rgb(20 20 20 / 6%);
+    background-color: white;
+    min-width: 500px;
+    .row {
+      width: 100%;
+    }
+    .btn {
+      background-image: linear-gradient(170deg, #dfbb43 -10%, rgb(255, 132, 0) 120%);
+      border-radius: 6px;
+      display: block;
+      width: 100%;
+      &.btn-circle {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
       }
     }
   }

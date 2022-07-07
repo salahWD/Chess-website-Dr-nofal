@@ -2,11 +2,11 @@
 
 class Admin {
   private $id;
-  public $name;
-  public $username;
+  public  $name;
+  public  $username;
   private $password;
   private $email;
-  public $image;
+  public  $image;
   private $token;
   private $login;
   private $image_uploaded = false;
@@ -22,29 +22,19 @@ class Admin {
           $login = filter_var($login, FILTER_SANITIZE_EMAIL);
         }else {
           if (preg_match("/[@$#%^&*()]/", $login)) {
-            array_push($errors, "email is invalid!");
+            array_push($errors, "email or username is invalid!");
           }else {
             $login = filter_var($login, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
           }
         }
+        $this->login = $login;
       }else {
-        array_push($errors, "username or email is invalid!");
+        array_push($errors, "username or email too short less than 5 chars");
       }
-      $this->login = $login;
     }else {
       array_push($errors, "you must enter username or email!");
     }
-
-    if (isset($data["password"]) && !empty($data["password"]) && is_string($data["password"])) {
-      $pass = $data["password"];
-      if (strlen($pass) < 4) {
-        array_push($errors, "password is invalid!");
-      }else {
-        $this->password = sha1($pass);
-      }
-    }else {
-      array_push($errors, "you have to enter password!");
-    }
+    $this->password = sha1($data["password"]);
 
     if (count($errors) > 0) {
       return $errors;
@@ -65,7 +55,7 @@ class Admin {
       if ($sql->rowCount() > 0) {
         return ["success" => true, "admin" => $sql->fetchObject("Admin")];
       }else {
-        return ["success" => false, "errors" => ["user is not exsist!"]];
+        return ["success" => false, "errors" => ["username or password is wrong!"]];
       }
     }else {
       return ["success" => false, "errors" => $check];
@@ -90,6 +80,25 @@ class Admin {
       return true;
     }else {
       return false;
+    }
+  }
+
+  public static function set_errors($errors) {
+
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    return $_SESSION["admin/errors"] = $errors;
+  }
+
+  public static function get_errors() {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION["admin/errors"])) {
+      return $_SESSION["admin/errors"];
+    }else {
+      return null;
     }
   }
 

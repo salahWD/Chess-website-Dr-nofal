@@ -38,6 +38,52 @@ window.addEventListener("load", function () {
     value.style.width = `${value.dataset.percent}%`;
   });
 
+  if ($("#form-login")[0]) {
+    
+    let loginForm = $("#form-login")[0];
+    let signupForm = $("#form-signup")[0];
+    let loginToggle = $("#login-toggle")[0];
+    let signupToggle = $("#signup-toggle")[0];
+    let formContrainer = $("#form-container")[0];
+  
+    loginToggle.addEventListener("click", function () {
+      formContrainer.classList.add("active");
+      signupForm.classList.add("animate__fadeInRight");
+      loginForm.classList.remove("animate__fadeInLeft");
+      loginForm.classList.add("animate__fadeOutLeft");
+    });
+    signupToggle.addEventListener("click", function () {
+      loginForm.classList.add("animate__fadeInLeft");
+      formContrainer.classList.remove("active");
+      signupForm.classList.remove("animate__fadeInRight");
+      signupForm.classList.add("animate__fadeOutRight");
+    });
+
+  }
+
+
+  if ($("#change-image")[0]) {
+    let btn = $("#change-image")[0];
+    let inputCreated = false;
+    let image = $("#image")[0];
+    let input = null;
+    btn.addEventListener("click", function () {
+      if (!inputCreated) {
+        input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("name", "image");
+        input.setAttribute("accept", "image/png, image/jpeg, image/webp, image/jpg");
+        input.classList.add("d-none", "input-h");
+        btn.parentElement.append(input);
+        input.addEventListener("change", function () {
+          image.src = URL.createObjectURL(input.files[0]);
+        });
+        inputCreated = true;
+      }
+      input.click();
+    });
+  }// image input
+
 });
 
 const swiper = new Swiper('.swiper', {

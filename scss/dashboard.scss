@@ -39,38 +39,6 @@ body {
     background-color: #d4edda;
     border-color: #c3e6cb;
   }
-  .btn {
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: var(--global-color-white);
-    &.btn-circle {
-      border-radius: 50%;
-    }
-    &.btn-danger {
-      background-color: $dangerC;
-      border: 1px solid $dangerB;
-      &:hover, &:focus {
-        background-color: #c82333;
-        border-color: #bd2130;
-      }
-    }
-    &.btn-success {
-      background-color: $successC;
-      border: 1px solid $successB;
-      &:hover, &:focus {
-        background-color: #218838;
-        border-color: #1e7e34;
-      }
-    }
-    &.btn-primary {
-      background-color: #007bff;
-      border: 1px solid #007bff;
-      &:hover, &:focus {
-        background-color: #0069d9;
-        border-color: #0062cc;
-      }
-    }
-  }
   @keyframes fadeInUpOverlay {
     0% {
       opacity: 0.3;

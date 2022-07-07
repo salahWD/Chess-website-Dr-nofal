@@ -54,6 +54,23 @@ $router->get("/blog/{param}", function ($params) {
 $router->get("/contact", function () {
 	Template::view("contact", 3, ["custom_style" => "contact.css"]);
 });
+$router->get("/login", function () {
+	include_once MODELS_PATH . "user.php";
+
+	if (User::isset_stage_session()) {
+		$id = User::isset_stage_session();
+		Template::view("signup-stage-two", 4, ["custom_style" 	=> "login.css"]);
+	}else {
+		Template::view("login", 4, [
+			"custom_style" 	=> "login.css",
+			"login_errors" 	=> User::get_login_errors_session(),
+			"signup_errors" => User::get_signup_errors_session(),
+			"login_info" 		=> User::get_login_holder_session(),
+			"signup_info"		=> User::get_signup_holder_session(),
+		]);
+	}
+
+});
 $router->get_admin("/dashboard", function () {
 	include_once MODELS_PATH . "comment.php";
 	include_once MODELS_PATH . "user.php";
@@ -200,11 +217,14 @@ $router->get_admin("/admin/profile", function ($args) {
 
 });
 $router->get("/dashboard/login", function () {
-	
-	if (isset($_SESSION["admin"]) && !empty($_SESSION["admin"])) {
+
+	include_once MODELS_PATH . "admin.php";
+
+	if (Admin::isset_admin_session()) {
 		header("Location: " . Router::route("dashboard"));
 	}else {
-		Template::admin_view("dashboard/login", 2, ["custom_style" => "login.css"]);
+		$errors = Admin::get_errors();
+		Template::admin_view("dashboard/login", 2, ["custom_style" => "login.css", "errors" => $errors]);
 	}
 	
 });
@@ -221,17 +241,57 @@ $router->get("/logout", function () {
 
 /* ======== POST REQUESTS AND API ======== */
 
+$router->post("/login", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	$user = new User();
+	$res = $user->login($args);
+	if ($res["success"]) {
+		$user::set_user_session($res["user"]);// load user object to session
+		echo "<h1>loged in</h1>";
+		// header("Location: " . Router::route("dashboard"));
+	}else {
+		User::set_login_holder_session($res["login_holder"]);
+		User::set_login_errors_session($res["login_errors"]);
+		header("Location: " . Router::route("login"));
+	}
+	exit();
+
+});
+$router->post("/signup", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	$user = new User();
+
+	if (User::isset_stage_session()) {
+		
+		$res = $user->signup_stage_two($args);
+		
+	}else {
+		// get_stage_session
+		$res = $user->signup_stage_one($args);
+	}
+		
+	if ($res["success"]) {
+		header("Location: " . Router::route("login"));
+	}else {
+		User::set_signup_errors_session($res["errors"]);
+		User::set_signup_holder_session($res["signup_holder"]);
+		header("Location: " . Router::route("login"));
+	}
+		
+});
 $router->post("/dashboard/login", function ($args) {
 	
 	include_once MODELS_PATH . "admin.php";
 	$admin = new Admin();
 	$res = $admin->login($args);
-
 	if ($res["success"]) {
 		session_start();
 		$admin::set_admin_session($res["admin"]);
 		header("Location: " . Router::route("dashboard"));
 	}else {
+		Admin::set_errors($res["errors"]);
 		header("Location: " . Router::route("dashboard/login"));
 	}
 	exit();
@@ -411,7 +471,7 @@ $router->post("/api/user", function ($args) {
 		
 		if ($action == "update") {
 
-			$result = $model->set($args);
+			$result = $model->set_update($args);
 			
 			if ($result["success"]) {
 				$saved = $model->save();
