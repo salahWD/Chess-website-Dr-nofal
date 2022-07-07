@@ -1,7 +1,17 @@
 <section class="login user">
   <div class="container">
+    <pre style="position: fixed;transform:translatey(-50%);top: 50%;left:20px;padding: 20px;background-color: white;margin-right:20px;">
+      signup
+      <?php var_dump($signup_errors);?>
+      <hr>
+        session
+      <?php var_dump($_SESSION);?>
+      <hr>
+        signup info
+      <?php var_dump($signup_info);?>
+    </pre>
     <div class="form-container" id="form-container">
-      <form action="<?= Router::route("signup");?>" method="POST">
+      <form action="<?= Router::route("signup");?>" method="POST" enctype="multipart/form-data">
         <div class="form animate__animated animate__fadeIn" id="form-signup">
           <div class="row">
             <div class="input-box info <?= isset($signup_errors["image"]) ? "is-wrong": "";?>">

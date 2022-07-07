@@ -17,6 +17,50 @@ function $(element) {
   }
 }
 
+function activeForm(activeFormId) {
+
+  let loginForm = $("#form-login")[0];
+  let signupForm = $("#form-signup")[0];
+  let formContrainer = $("#form-container")[0];
+
+  if (activeFormId==1) {
+
+    formContrainer.classList.add("active");
+    signupForm.classList.add("animate__fadeInRight");
+    loginForm.classList.remove("animate__fadeInLeft");
+    loginForm.classList.add("animate__fadeOutLeft");
+
+  }else {
+
+    loginForm.classList.add("animate__fadeInLeft");
+    formContrainer.classList.remove("active");
+    signupForm.classList.remove("animate__fadeInRight");
+    signupForm.classList.add("animate__fadeOutRight");
+
+  }
+  
+}
+
+function firestActiveForm(activeFormId) {
+
+  let loginForm = $("#form-login")[0];
+  let signupForm = $("#form-signup")[0];
+  let formContrainer = $("#form-container")[0];
+
+  if (activeFormId==1) {
+
+    formContrainer.classList.add("active");
+    signupForm.classList.add("animate__fadeInRight");
+
+  }else {
+
+    formContrainer.classList.remove("active");
+    loginForm.classList.add("animate__fadeInLeft");
+
+  }
+  
+}
+
 let header = $("#header")[0];
 let overlay = $("#header-overlay")[0];
 
@@ -39,28 +83,24 @@ window.addEventListener("load", function () {
   });
 
   if ($("#form-login")[0]) {
-    
-    let loginForm = $("#form-login")[0];
-    let signupForm = $("#form-signup")[0];
+
+    if (window.location.hash == "#signup") {
+      firestActiveForm(1);// form signup is active
+    }else {
+      firestActiveForm(2);// form login is active
+    }
+
     let loginToggle = $("#login-toggle")[0];
     let signupToggle = $("#signup-toggle")[0];
-    let formContrainer = $("#form-container")[0];
-  
+
     loginToggle.addEventListener("click", function () {
-      formContrainer.classList.add("active");
-      signupForm.classList.add("animate__fadeInRight");
-      loginForm.classList.remove("animate__fadeInLeft");
-      loginForm.classList.add("animate__fadeOutLeft");
+      activeForm(1);
     });
     signupToggle.addEventListener("click", function () {
-      loginForm.classList.add("animate__fadeInLeft");
-      formContrainer.classList.remove("active");
-      signupForm.classList.remove("animate__fadeInRight");
-      signupForm.classList.add("animate__fadeOutRight");
+      activeForm(2);
     });
 
   }
-
 
   if ($("#change-image")[0]) {
     let btn = $("#change-image")[0];

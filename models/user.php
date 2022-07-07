@@ -63,10 +63,15 @@
         if(filter_var($data["login"], FILTER_VALIDATE_EMAIL)) {
           $this->login = filter_var($data["login"], FILTER_SANITIZE_EMAIL);
         }else {
-          if (preg_match("/[!@#$%^&*)(><:\"';|]/i" , $data["login"])) {
-            $errors["login"] = "username cannot contain special character";
-          }else {
-            $this->login = $data["login"];
+          
+          if (!preg_match("/[A-z]{2,}/i" , $data["login"])) {
+            $errors["login"] = "username have to containe at least 2 alphabets";
+          }
+          if (5 > strlen($data["login"]) || 30 < strlen($data["login"])) {
+            $errors["login"] = "username have to be between 5 and 30 character";
+          }
+          if (empty($errors["login"])) {
+            $this->login = FORM::valid_str($data["login"]);
           }
         }
       }else {
@@ -94,8 +99,8 @@
       $errors = [];
 
       if (isset($data["username"]) && is_string($data["username"])) {
-        if (preg_match("/[!@#$%^&*)(><:\"';|]/i" , $data["username"])) {
-          $errors["username"] = "username cannot contain special character";
+        if (!preg_match("/[A-z]{2,}/i" , $data["username"])) {
+          $errors["username"] = "username have to containe at least 2 alphabets";
         }
         if (5 > strlen($data["username"]) || 30 < strlen($data["username"])) {
           $errors["username"] = "username have to be between 5 and 30 character";
@@ -111,7 +116,7 @@
         if (filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
           $this->email = filter_var($data["email"], FILTER_SANITIZE_EMAIL);
         }else {
-          $errors["email"] = "username cannot contain special character";
+          $errors["email"] = "email is not valid";
         }
       }else {
         $errors["email"] = "email is required";
@@ -132,11 +137,7 @@
         "email"   => $data["email"],
       ];
 
-      if (count($errors) > 0) {
-        return ["success" => false, "errors" => $errors, "signup_holder" => $info];
-      }else {
-        return ["success" => true];
-      }
+      return ["success" => count($errors) > 0 ? false: true, "errors" => $errors ?? [], "signup_holder" => $info];
 
     }// set for signup stage one request
 
@@ -145,17 +146,22 @@
       $errors = [];
 
       if (isset($data["name"]) && is_string($data["name"])) {
+        if (5 > strlen($data["name"]) || strlen($data["name"]) > 29) {
+          $errors["name"] = "name can't be less than 5 or larger than 30 characters";
+        }
+        if (!preg_match("/[A-z]{4,}/i", $data["name"])) {
+          $errors["name"] = "name have to contain at least 4 alphabet characters";
+        }
         if (preg_match("/[!@#$%^&*)(><:\"';|]/i" , $data["name"])) {
           $errors["name"] = "name cannot contain special character";
         }
-        if (5 > strlen($data["name"]) || 30 < strlen($data["name"])) {
-          $errors["name"] = "name have to be between 5 and 30 character";
-        }
         if (empty($errors["name"])) {
-          $this->name = FORM::valid_str($data["name"]);
+          $this->name = Form::valid_str($data["name"]);
         }
+      }else {
+        $errors["name"] = "name is required";
       }
-
+      
       if (isset($data["image"]) && !empty($data["image"])) {
         $image = Form::valid_image($data["image"]);
         if ($image["success"]) {
@@ -165,10 +171,8 @@
           $errors["image"] = $image["errors"];
         }
       } 
-
-      $this->image_uploaded = true;
       
-      $info = ["name" => $data["name"]];
+      $info = ["name" => $data["name"] ?? ""];
 
       if (count($errors) > 0) {
         return ["success" => false, "errors" => $errors, "signup_holder" => $info];
@@ -189,28 +193,31 @@
       }
       
       if (isset($data["name"]) && is_string($data["name"])) {
-        if (strlen($data["name"]) > 4 && strlen($data["name"]) < 30) {
-          if(preg_match("/[a-z]{2,}/i", $data["name"])) {
-            $this->name = Form::valid_str($data["name"]);
-          }else {
-            $errors["name"] = "name have to contain at least 2 alphabet characters";
-          }
-        }else {
+        if (5 > strlen($data["name"]) || strlen($data["name"]) > 29) {
           $errors["name"] = "name can't be less than 5 or larger than 30 characters";
+        }
+        if (!preg_match("/[A-z]{4,}/i", $data["name"])) {
+          $errors["name"] = "name have to contain at least 4 alphabet characters";
+        }
+        if (preg_match("/[!@#$%^&*)(><:\"';|]/i" , $data["name"])) {
+          $errors["name"] = "name cannot contain special character";
+        }
+        if (empty($errors["name"])) {
+          $this->name = Form::valid_str($data["name"]);
         }
       }else {
         $errors["name"] = "name is required";
       }
       
       if (isset($data["username"]) && is_string($data["username"])) {
-        if (strlen($data["username"]) > 4 && strlen($data["username"]) < 30) {
-          if(preg_match("/[a-z]{2,}/i", $data["username"])) {
-            $this->username = Form::valid_str($data["username"]);
-          }else {
-            $errors["username"] = "username have to contain at least 2 alphabet characters";
-          }
-        }else {
-          $errors["username"] = "username can't be less than 5 or larger than 30 characters";
+        if (!preg_match("/[A-z]{2,}/i" , $data["username"])) {
+          $errors["username"] = "username have to containe at least 2 alphabets";
+        }
+        if (5 > strlen($data["username"]) || 30 < strlen($data["username"])) {
+          $errors["username"] = "username have to be between 5 and 30 character";
+        }
+        if (empty($errors["username"])) {
+          $this->username = FORM::valid_str($data["username"]);
         }
       }else {
         $errors["username"] = "username is required";
@@ -224,14 +231,6 @@
         }
       }else {
         $errors["email"] = "email is required";
-      }
-
-      if (isset($data["type"]) && is_string($data["type"])) {
-        if (strlen($data["type"]) > 2) {
-          $this->tag = Form::valid_str($data["type"]);
-        }else {
-          $errors["type"] = "type can't be less than 3 character";
-        }
       }
 
       if (isset($data["password"]) && is_string($data["password"])) {
@@ -345,16 +344,31 @@
     public function signup_stage_one($data) {
       $res = $this->set_signup_stage_one($data);
       if ($res["success"]) {
+        $errors = [];
 
-        $db = DB::get_instance();
-        $sql = $db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $res = $sql->execute([$this->username, $this->email, $this->password]);
+        if (!self::is_unique_value("username", $this->username)) {
+          $errors["username"] = "this username is used from another user";
+        }
 
-        if ($res) {
-          $_SESSION["signup/stage"] = $db->lastInsertId();
-          return ["success" => true];
+        if (!self::is_unique_value("email", $this->email)) {
+          $errors["email"] = "this email has signed up already";
+        }
+
+        if (count($errors) == 0) {
+
+          $db = DB::get_instance();
+          $sql = $db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+          $res = $sql->execute([$this->username, $this->email, $this->password]);
+
+          if ($res) {
+            $_SESSION["signup/stage"] = $db->lastInsertId();
+            return ["success" => true];
+          }else {
+            return ["success" => false, "errors" => ["username" => "somthing went wrong please ty again"]];
+          }
+
         }else {
-          return ["success" => false, "errors" => ["username" => "somthing went wrong please ty again"]];
+          return ["success" => false, "errors" => $errors, "signup_holder" => $res["signup_holder"]];
         }
 
       }else {
@@ -366,7 +380,7 @@
       $res = $this->set_signup_stage_two($data);
       if ($res["success"]) {
         
-        $id = self::get_stage_session();
+        $id = Router::get_session("signup/stage", false);
         $db = DB::get_instance();
         $execute = [
           ":name" => $this->name,
@@ -374,18 +388,17 @@
         ];
         
         $image = "";
-        if (isset($this->image_uploaded)) {
+        if ($this->image_uploaded) {
           $image = ", image = :image";
           $execute[":image"] = $this->image["new_name"];
           move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
         }
-
-        $sql = $db->prepare("UPDATE users SET name = ? $image WHERE id = ?");
+        $sql = $db->prepare("UPDATE users SET name = :name $image WHERE id = :id");
         $res = $sql->execute($execute);
 
         if ($res) {
-          self::delete_stage_session();
-          return ["success" => true];
+          self::delete_session("signup/stage");
+          return ["success" => true, "user" => User::get_user($id)];
         }else {
           return ["success" => false];
         }
@@ -395,138 +408,37 @@
       }
     }// sign user optinal data
 
-    public static function get_login_errors_session() {
+    public static function set_session($name, $value) {
       if (!isset($_SESSION)) {
         session_start();
       }
-      if (isset($_SESSION["user/login/errors"])) {
-        $errors = $_SESSION["user/login/errors"];
-        unset($_SESSION["user/login/errors"]);
-        return $errors;
-      }else {
-        return null;
+      if (isset($_SESSION[$name])) {
+        unset($_SESSION[$name]);
       }
+      return $_SESSION[$name] = $value;
     }
-
-    public static function set_login_errors_session($errors) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/login/errors"])) {
-        unset($_SESSION["user/erros"]);
-      }
-      return $_SESSION["user/login/errors"] = $errors;
-    }
-
-    public static function get_login_holder_session() {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/login/info"])) {
-        $errors = $_SESSION["user/login/info"];
-        unset($_SESSION["user/login/info"]);
-        return $errors;
-      }else {
-        return null;
-      }
-    }
-
-    public static function set_login_holder_session($info) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/login/info"])) {
-        unset($_SESSION["user/login/info"]);
-      }
-      return $_SESSION["user/login/info"] = $info;
-    }
-
-    public static function get_signup_errors_session() {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/signup/errors"])) {
-        $errors = $_SESSION["user/signup/errors"];
-        unset($_SESSION["user/signup/errors"]);
-        return $errors;
-      }else {
-        return null;
-      }
-    }
-
-    public static function set_signup_errors_session($errors) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/signup/errors"])) {
-        unset($_SESSION["user/signup/errors"]);
-      }
-      return $_SESSION["user/signup/errors"] = $errors;
-    }
-
-    public static function get_signup_holder_session() {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/signup/info"])) {
-        $info = $_SESSION["user/signup/info"];
-        unset($_SESSION["user/signup/info"]);
-        return $info;
-      }else {
-        return null;
-      }
-    }
-
-    public static function set_signup_holder_session($info) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user/signup/info"])) {
-        unset($_SESSION["user/signup/info"]);
-      }
-      return $_SESSION["user/signup/info"] = $info;
-    }
-
-    public static function set_user_session($user) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["user"])) {
-        unset($_SESSION["user"]);
-      }
-      return $_SESSION["user"] = $user;
-    }// loads user object to session
     
-    public static function get_stage_session() {
+    public static function delete_session($name) {
       if (!isset($_SESSION)) {
         session_start();
       }
-      $stage = $_SESSION["signup/stage"];
-      if (isset($_SESSION["signup/stage"])) {
-        unset($_SESSION["signup/stage"]);
-      }
-      return $stage;
-    }
-
-    public static function delete_stage_session() {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["signup/stage"])) {
-        unset($_SESSION["signup/stage"]);
+      if (isset($_SESSION[$name])) {
+        unset($_SESSION[$name]);
       }
       return true;
     }
 
-    public static function isset_stage_session() {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION["signup/stage"])) {
-        return true;
-      }else {
+    public static function is_unique_value($field, $value) {
+      $db = DB::get_instance();
+      $sql = $db->prepare("SELECT id FROM users WHERE " . $field . " = ?");
+      $sql->execute([$value]);
+
+      if ($sql->rowCount() > 0) {
         return false;
+      }else {
+        return true;
       }
+
     }
 
   }

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="form-container" id="form-container">
       <form action="<?= Router::route("login");?>" method="POST">
-        <div class="form animate__animated animate__fadeInLeft" id="form-login">
+        <div class="form animate__animated" id="form-login">
           <button type="button" class="btn toggle-btn" id="login-toggle">Sign Up</button>
           <h2 class="title w-100">Login</h2>
           <div class="row">
@@ -14,7 +14,7 @@
             <div class="input-box <?= isset($login_errors["password"]) ? "is-wrong": "";?>">
               <label for="password">password</label>
               <input type="text" name="password" id="password" class="password-input" placeholder="password">
-              <p class="error"><?= $login_errors["password"];?></p>
+              <p class="error"><?= $login_errors["password"] ?? "";?></p>
             </div>
             <button type="submit" class="btn btn-warning">Login</button>
           </div>

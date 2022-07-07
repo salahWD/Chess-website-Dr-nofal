@@ -35,9 +35,15 @@
             </li>
           </ul>
         </div>
-        <div class="cta md-visible">
-          <div class="btn btn-warning">Login Now</div>
-        </div>
+          <?php if (!Router::isset_session("user")):?>
+            <div class="cta md-visible">
+              <a href="<?= Router::route("login");?>" class="btn btn-warning">Login Now</a>
+            </div>
+          <?php else:?>
+            <div class="cta md-visible">
+              <a href="<?= Router::route("login");?>" class="btn btn-warning">logout</a>
+            </div>
+          <?php endif;?>
       </div>
     </nav>
     <div class="overlay sm-visible" id="header-overlay"></div>

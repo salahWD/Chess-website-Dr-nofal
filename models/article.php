@@ -239,7 +239,20 @@
       return true;
     }
 
-
+    public static function get_comments($id) {
+      
+      $db = DB::get_instance();
+      $sql = $db->prepare(
+        "SELECT C.*, U.image AS user_image, U.name AS user_name FROM comments C
+        INNER JOIN users U ON U.id = C.user WHERE article = ?");
+      $sql->execute([$id]);
+      if ($sql->rowCount() > 0) {
+        include_once MODELS_PATH . "comment.php";
+        return $sql->fetchAll(PDO::FETCH_CLASS, "Comment");
+      }else {
+        return false;
+      }
+    }
 
   }
 ?>

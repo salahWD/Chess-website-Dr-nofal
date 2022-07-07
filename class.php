@@ -142,6 +142,33 @@ class Router {
     return MASTER_URL . $page;
   }
 
+  
+  public static function get_session($name, $delete) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION[$name])) {
+      $errors = $_SESSION[$name];
+      if ($delete) {
+        unset($_SESSION[$name]);
+      }
+      return $errors;
+    }else {
+      return null;
+    }
+  }
+
+  public static function isset_session($name) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION[$name])) {
+      return true;
+    }else {
+      return false;
+    }
+  }
+
 }
 
 class Template {

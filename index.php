@@ -40,12 +40,21 @@ $router->get("/blog", function () {
 	Template::view("blog", 3, ["custom_style" => "blog.css", "articles" => $articles]);
 });
 $router->get("/blog/{param}", function ($params) {
-
 	include_once MODELS_PATH . "blog.php";
-	$article = Blog::get_article_title($params["title"]);
-
+	include_once MODELS_PATH . "article.php";
+	if (Router::isset_session("user")) {
+		include_once MODELS_PATH . "user.php";
+		$user = unserialize(Router::get_session("user", false));
+	}
+	$article = Blog::get_article_title($params["param"]);
+	$comments = Article::get_comments($article->id);
 	if ($article !== false) {
-		Template::view("article", 3, ["custom_style" => "article.css", "article" => $article]);
+		Template::view("article", 3, [
+			"custom_style" => "article.css",
+			"article" => $article,
+			"user" => $user,
+			"comments" => $comments,
+		]);
 	}else {
 		header("Location: " . Router::route("404"));
 		exit();
@@ -57,17 +66,26 @@ $router->get("/contact", function () {
 $router->get("/login", function () {
 	include_once MODELS_PATH . "user.php";
 
-	if (User::isset_stage_session()) {
-		$id = User::isset_stage_session();
-		Template::view("signup-stage-two", 4, ["custom_style" 	=> "login.css"]);
+	if (!Router::isset_session("user")) {
+
+		if (Router::isset_session("signup/stage")) {
+			Template::view("signup-stage-two", 4, [
+				"custom_style" => "login.css",
+				"signup_errors" => Router::get_session("user/signup/errors", true),
+				"signup_info" => Router::get_session("user/signup/info", true)
+			]);
+		}else {
+			Template::view("login", 4, [
+				"custom_style" 	=> "login.css",
+				"login_errors" 	=> Router::get_session("user/login/errors", true),
+				"signup_errors" => Router::get_session("user/signup/errors", true),
+				"login_info" 		=> Router::get_session("user/login/info", true),
+				"signup_info"		=> Router::get_session("user/signup/info", true),
+			]);
+		}
 	}else {
-		Template::view("login", 4, [
-			"custom_style" 	=> "login.css",
-			"login_errors" 	=> User::get_login_errors_session(),
-			"signup_errors" => User::get_signup_errors_session(),
-			"login_info" 		=> User::get_login_holder_session(),
-			"signup_info"		=> User::get_signup_holder_session(),
-		]);
+		header("location: " . Router::route(""));
+		exit();
 	}
 
 });
@@ -242,17 +260,17 @@ $router->get("/logout", function () {
 /* ======== POST REQUESTS AND API ======== */
 
 $router->post("/login", function ($args) {
-	
 	include_once MODELS_PATH . "user.php";
+	
 	$user = new User();
 	$res = $user->login($args);
 	if ($res["success"]) {
-		$user::set_user_session($res["user"]);// load user object to session
-		echo "<h1>loged in</h1>";
-		// header("Location: " . Router::route("dashboard"));
+		$user::set_session("user", serialize($res["user"]));
+		header("Location: " . Router::route(""));
+		exit();
 	}else {
-		User::set_login_holder_session($res["login_holder"]);
-		User::set_login_errors_session($res["login_errors"]);
+		User::set_session("user/login/info", $res["login_holder"]);
+		User::set_session("user/login/errors", $res["login_errors"]);
 		header("Location: " . Router::route("login"));
 	}
 	exit();
@@ -263,22 +281,29 @@ $router->post("/signup", function ($args) {
 	include_once MODELS_PATH . "user.php";
 	$user = new User();
 
-	if (User::isset_stage_session()) {
+	if (Router::isset_session("signup/stage")) {
 		
 		$res = $user->signup_stage_two($args);
 		
+		if ($res["success"]) {
+			User::set_session("user", serialize($res["user"]));
+			header("Location: " . Router::route(""));
+			exit();
+		}
 	}else {
-		// get_stage_session
+
 		$res = $user->signup_stage_one($args);
+
+		if ($res["success"]) {
+
+			header("Location: " . Router::route("login"));
+			exit();
+		}
 	}
-		
-	if ($res["success"]) {
-		header("Location: " . Router::route("login"));
-	}else {
-		User::set_signup_errors_session($res["errors"]);
-		User::set_signup_holder_session($res["signup_holder"]);
-		header("Location: " . Router::route("login"));
-	}
+
+	User::set_session("user/signup/errors", $res["errors"]);
+	User::set_session("user/signup/info", $res["signup_holder"]);
+	header("Location: " . Router::route("login#signup"));
 		
 });
 $router->post("/dashboard/login", function ($args) {
