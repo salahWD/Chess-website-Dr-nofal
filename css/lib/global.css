@@ -20,7 +20,11 @@
   box-sizing: border-box;
   font-family: inherit;
 }
-
+.btn,
+.btn:hover,
+.btn:focus {
+  border: none !important;
+}
 *::selection {
   background-color: var(--global-color-primary);
 }

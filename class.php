@@ -142,7 +142,16 @@ class Router {
     return MASTER_URL . $page;
   }
 
-  
+  public static function set_session($name, $value) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION[$name])) {
+      unset($_SESSION[$name]);
+    }
+    return $_SESSION[$name] = $value;
+  }
+
   public static function get_session($name, $delete) {
     if (!isset($_SESSION)) {
       session_start();
@@ -153,6 +162,19 @@ class Router {
         unset($_SESSION[$name]);
       }
       return $errors;
+    }else {
+      return null;
+    }
+  }
+
+  public static function get_user() {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION["user"])) {
+      include_once MODELS_PATH . "user.php";
+      $user = $_SESSION["user"];
+      return unserialize($user);
     }else {
       return null;
     }

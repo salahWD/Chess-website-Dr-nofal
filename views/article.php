@@ -48,15 +48,22 @@
     <div class="comments">
       <h4 class="title">comments:</h4>
       <?php if (isset($user) && !empty($user)):?>
-        <form action="<?= Router::route("add/comment");?>" method="POST">
+        <form action="<?= Router::route("add/comment");?>" id="comment-form" method="POST">
+          <input type="hidden" name="article_id" value="<?= $article->id;?>">
           <div class="input-holder">
-            <label for="comment">
-              <div class="image">
-                <img src="<?= Router::route("uploads/img/" . $user->image);?>" alt="">
-              </div>
-            </label>
-            <textarea name="comment" id="comment" placeholder="Leave a comment"></textarea>
-            <button class="btn btn-warning">send <i class="fa-solid fa-paper-plane"></i></button>
+            <div class="body">
+              <label for="comment">
+                <div class="image">
+                  <img src="<?= Router::route("uploads/img/" . $user->image);?>" alt="">
+                </div>
+                <span class="name">
+                  <?= $user->name;?>
+                </span>
+              </label>
+              <textarea name="comment" id="comment" placeholder="Leave a comment"></textarea>
+              <button type="button" id="comment-send" data-value="send" class="btn btn-warning">send <i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+              <p class="error animate__animated">Lorem ipsum dolor sit amet.</p>
           </div>
         </form>
       <?php else:?>
@@ -64,21 +71,29 @@
       <?php endif;?>
       <hr class="divider end">
       <?php if (isset($comments) && !empty($comments) && is_array($comments)):?>
-        <?php foreach ( $comments as $comment ):?>
-          <div class="comment">
-            <div class="body">
-              <div class="profile">
-                <div class="user-img"><img src="<?= Router::route("uploads/img/$comment->user_image");?>" alt=""></div>
-                <span class="user-name"><?= $comment->user_name;?></span>
+        <div class="comments-container" id="comments">
+          <?php foreach ($comments as $comment):?>
+            <div class="comment">
+              <input type="hidden" class="id" value="<?= $comment->id;?>">
+              <div class="body">
+                <div class="profile">
+                  <div class="user-img"><img src="<?= Router::route("uploads/img/$comment->user_image");?>" alt=""></div>
+                  <span class="user-name"><?= $comment->user_name;?></span>
+                </div>
+                <div class="text"><?= $comment->comment;?></div>
               </div>
-              <div class="text"><?= $comment->comment;?></div>
+              <div class="actions">
+                <button title="reply" class="btn btn-transparent reply reply-btn"><i class="fa-solid fa-reply"></i> reply</button>
+                <?php if ($comment->replies_count > 0):?>
+                  <button title="show replies" class="btn btn-transparent show-replies-btn">view replies (<span class="number"><?= $comment->replies_count;?></span>)</button>
+                  <?php else:?>
+                    <button title="show replies" class="btn btn-transparent">no replies</button>
+                <?php endif;?>
+                <p class="date"><?= $comment->date;?></p>
+              </div>
             </div>
-            <div class="actions">
-              <button title="replay" class="btn btn-transparent replay"><i class="fa-solid fa-reply"></i> <small>replay</small></button>
-              <p class="date"><?= $comment->date;?></p>
-            </div>
-          </div>
-        <?php endforeach;?>
+          <?php endforeach;?>
+        </div>
       <?php endif;?>
     </div>
   </div>

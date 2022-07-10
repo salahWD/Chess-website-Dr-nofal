@@ -184,6 +184,21 @@ iframe.seamless {
 .btn.btn-circle {
   border-radius: 50%;
 }
+i.load {
+  font-size: 35px;
+  position: relative;
+  color: rgb(56, 56, 56);
+  animation: turnung 0.9s infinite ease-out;
+}
+@keyframes turnung  {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+  
+}
 /* === end utilities === */
 
 /* === start animations === */

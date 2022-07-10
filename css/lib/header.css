@@ -116,6 +116,109 @@ header.header .navbar .content .cta {
   align-items: center;
   justify-content: center;
 }
+@keyframes fadeOutUpMenu {
+  0% {
+    transform: translateX(0);
+  }
+  99% {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+header.header .navbar .content .profile {
+  align-items: center;
+  position: relative;
+  column-gap: 20px;
+  display: flex;
+  user-select: none;
+  cursor: pointer;
+}
+header.header .navbar .content .profile .user-name {
+  color: var(--global-color-white);
+  font-family: var(--global-font-primary);
+  letter-spacing: 1px;
+  font-weight: normal;
+  font-size: 24px;
+}
+header.header .navbar .content .profile .admin-name {
+  font-family: var(--global-font-primary);
+  font-size: 22px;
+  margin: 0;
+  padding: 0;
+}
+header.header .navbar .content .profile .image {
+  width: 55px;
+  height: 55px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+header.header .navbar .content .profile .image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+header.header .navbar .content .profile .position-holder {
+  transition: box-shadow 0.3s ease-out;
+  animation-fill-mode: forwards;
+  top: calc(100% + 10px);
+  height: fit-content;
+  position: absolute;
+  width: fit-content;
+  overflow: hidden;
+  border-radius: 5px;
+  right: 10px;
+  animation-duration: 0.35s;
+  z-index: 1;
+  animation-name: fadeOutUpMenu;
+}
+header.header .navbar .content .profile .position-holder.active {
+  animation-name: none;
+  box-shadow: 0px 5px 20px 0px #000;
+}
+header.header .navbar .content .profile .position-holder.active .menu {
+  animation-name: fadeInUp;
+}
+header.header .navbar .content .profile .position-holder .menu {
+  animation-name: fadeOutUp;
+  animation-duration: 0.3s;
+  background: var(--global-color-white);
+  top: -100%;
+  position: relative;
+  padding: 8px 4px;
+  width: 210px;
+}
+header.header .navbar .content .profile .position-holder .menu .list {
+  display: flex;
+  flex-direction: column;
+}
+header.header .navbar .content .profile .position-holder .menu .list a {
+  border-radius: 5px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+header.header .navbar .content .profile .position-holder .menu .list a:hover {
+  background-color: var(--global-color-primary);
+}
+header.header .navbar .content .profile .position-holder .menu .list a li {
+  padding: 12px;
+}
+header.header .navbar .content .profile .position-holder .menu .list a li .icon {
+  color: var(--global-color-black);
+  opacity: 0.8;
+  margin-right: 12px;
+}
+header.header .navbar .content .profile .position-holder .menu .list a li .title {
+  font-family: var(--global-font-sec);
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--global-color-text-dark);
+}
+header.header .navbar .content .profile .position-holder .menu .list a:hover li .title {
+  color: var(--global-color-black);
+}
 /* end header */
 
 @media (max-width: 991px) {

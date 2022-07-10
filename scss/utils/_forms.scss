@@ -163,14 +163,18 @@ $dangerB: #dc3545;
     row-gap: 30px;
     .image {
       max-width: 100px;
+      max-height: 100px;
       position: relative;
       img {
+        aspect-ratio: 1 / 1;
         max-width: 100%;
         border-radius: 50%;
         object-fit: cover;
         object-position: center center;
       }
       .change-image {
+        height: 30px;
+        width: 30px;
         position: absolute;
         bottom: 0;
         right: 0;

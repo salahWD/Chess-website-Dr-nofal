@@ -1,3 +1,4 @@
+<?php $user = Router::get_user();?>
 <header class="header">
   <div class="container">
     <nav class="navbar">
@@ -35,13 +36,34 @@
             </li>
           </ul>
         </div>
-          <?php if (!Router::isset_session("user")):?>
+          <?php if ($user == null):?>
             <div class="cta md-visible">
               <a href="<?= Router::route("login");?>" class="btn btn-warning">Login Now</a>
             </div>
           <?php else:?>
-            <div class="cta md-visible">
-              <a href="<?= Router::route("login");?>" class="btn btn-warning">logout</a>
+            <div class="profile" id="profile-trigger">
+              <h3 class="user-name"><?= $user->name;?></h3>
+              <div class="image">
+                <img src="<?= Router::route("uploads/img/{$user->image}");?>" alt="">
+              </div>
+              <div class="position-holder" id="profile">
+                <div class="menu animate__animated">
+                  <ul class="list list-unstyled">
+                    <a href="<?= Router::route("user/profile");?>">
+                      <li>
+                        <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                        <span class="title">edit profile</span>
+                      </li>
+                    </a>
+                    <a href="<?= Router::route("logout");?>">
+                      <li>
+                        <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                        <span class="title">logout</span>
+                      </li>
+                    </a>
+                  </ul>
+                </div>
+              </div>
             </div>
           <?php endif;?>
       </div>

@@ -3,6 +3,11 @@ section.header {
   background-image: url(../img/blog-background.jpg);
 }
 
+textarea, textarea:focus, textarea:active, textarea:hover {
+  border: 1px solid #bdbdbd3d !important;
+  outline: none !important;
+}
+
 section.article {
   padding-top: 60px;
 }
@@ -104,18 +109,36 @@ section.article .comments .title {
 }
 section.article .comments .input-holder {
   display: flex;
-  margin-bottom: 44px;
+  flex-direction: column;
+  margin-bottom: 0;
 }
-section.article .comments label {
+section.article .comments .input-holder.is-wrong textarea {
+  border-color: #dc3546cb;
+}
+section.article .comments .input-holder .error {
+  color: #dc3545;
+  margin: 0;
+  padding-left: 80px;
+}
+section.article .comments .input-holder .body {
+  display: flex;
+  margin-bottom: 12px;
+}
+section.article .comments .body label {
   width: 70px;
+  text-align: center;
+  font-size: 18px;
+  font-family: var(--global-font-sec);
+  color: #5e5d5d;
 }
-section.article .comments label .image img {
+section.article .comments .body label .image img {
   object-fit: cover;
   object-position: center center;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
 }
-section.article .comments textarea, section.article .comments .comment {
+section.article .comments .body textarea, section.article .comments .comment {
+  transition: border 0.5s ease-out;
   position: relative;
   min-height: 120px;
   padding: 16px 18px;
@@ -128,9 +151,12 @@ section.article .comments textarea, section.article .comments .comment {
   border-radius: 5px;
   margin-left: 20px;
 }
-section.article .comments textarea:focus, section.article .comments textarea:active, section.article .comments textarea:hover {
-  border: 1px solid #bdbdbd3d;
-  outline: none;
+section.article .comments .body textarea {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+section.article .comments .body .btn {
+  transition: all 0.4s ease-out;
 }
 section.article .comments .comment {
   margin: 0 0 30px 0;
@@ -152,7 +178,11 @@ section.article .comments .comment .body .profile .user-img {
   width: 60px;
 }
 section.article .comments .comment .body .profile .user-name {
+  text-align: center;
+  font-family: var(--global-font-sec);
+  text-align: center;
   color: #5e5d5d;
+  font-size: 18px;
 }
 section.article .comments .comment .body .profile .user-img img {
   object-fit: cover;
@@ -167,12 +197,15 @@ section.article .comments .comment .body .text {
   color: #5e5d5d;
 }
 section.article .comments .comment .actions {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
   padding-top: 8px;
   display: flex;
-  justify-content: space-between;
-  position: relative;
 }
 section.article .comments .comment .actions .btn {
+  flex-basis: calc(100% / 3);
+  min-width: calc(100% / 3);
   color: var(--global-color-text-dark);
   background-color: transparent;
   padding: unset;
@@ -183,10 +216,91 @@ section.article .comments .comment .actions .btn:hover {
   color: var(--global-color-primary);
 }
 section.article .comments .comment .actions .date {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--global-color-text-dark);
+  flex-basis: calc(100% / 3);
   font-size: 16px;
+  min-width: calc(100% / 3);
   margin: 0;
 }
+section.article .comments .comment .actions form {
+  animation: slideDown 0.9s ease-out;
+  margin-top: 18px;
+  flex-basis: 100%;
+  min-width: 100%;
+  overflow: hidden;
+}
+section.article .comments .comment .actions form.remove {
+  animation: slideUp 0.9s ease-out forwards;
+}
+section.article .comments .comment .actions form .comment {
+  flex-basis: 100%;
+  min-width: 100%;
+  margin-bottom: 8px;
+}
+section.article .comments .comment .actions form .btns-container {
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  column-gap: 20px;
+  display: flex;
+  width: 100%;
+}
+section.article .comments .comment .actions form .btns-container .btn {
+  transition: border 0.35s ease-in-out;
+}
+section.article .comments .comment .actions form .btns-container .cancel-btn {
+  border: 1px solid transparent;
+}
+section.article .comments .comment .actions form .btns-container .cancel-btn:hover {
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+section.article .comments .comment .replies .reply {
+  padding-top: 18px;
+  margin-left: 40px;
+  border-top: 1px solid #bdbdbd3d;
+  margin-top: 18px;
+  padding-left: 20px;
+}
+section.article .comments .comment .replies .reply .text {
+  padding-top: 32px;
+}
+section.article .comments .comment .replies .reply .profile .tag {
+  color: #abaaaa;
+  font-size: 14px;
+}
+section.article .comments .comment .replies .reply .actions {
+  justify-content: flex-end;
+}
+section.article .comments .comment .replies .reply .actions .date {
+  text-align: right;
+}
+@keyframes slideDown {
+  from {
+    max-height: 0;
+  }
+  to {
+    max-height: 170px;
+  }
+}
+@keyframes slideUp {
+  from {
+    max-height: 170px;
+    margin-top: 18px;
+  }
+  to {
+    margin-top: 0;
+    max-height: 0;
+  }
+}
+
+/* section.article .comments .comment .actions form .btns-container .btn {
+  min-width: 50%;
+} */
 @media (max-width: 767px) {
   section.article .container {
     max-width: unset;

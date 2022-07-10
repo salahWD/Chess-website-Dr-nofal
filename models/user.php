@@ -10,6 +10,7 @@
     public $image = "unknown.jpg";
     public $date;
     private $image_uploaded = false;
+    private $password_inserted = false;
 
     public static function get_recent_users($count) {
 
@@ -236,11 +237,10 @@
       if (isset($data["password"]) && is_string($data["password"])) {
         if (strlen($data["password"]) > 4) {
           $this->password = sha1($data["password"]);
+          $this->password_inserted = true;
         }else {
           $errros["password"] = "password cant be less than 5 characters";
         }
-      }else {
-        $errros["password"] = "password is required";
       }
 
       if (isset($data["image"]) && !empty($data["image"])) {
@@ -294,14 +294,19 @@
           ":id" => $this->id
         ];
         $image_field = "";
+        $password = "";
 
         if ($this->image_uploaded) {
           $image_field  = ", image = :image";
           $execute[":image"] = $this->image["new_name"];
           move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
         }
+        if ($this->password_inserted) {
+          $password  = ", password = :password";
+          $execute[":password"] = $this->password;
+        }
 
-        $stmt = $db->prepare("UPDATE users SET name = :name, username = :username, email = :email $image_field
+        $stmt = $db->prepare("UPDATE users SET name = :name, username = :username, email = :email $password $image_field
         WHERE id = :id");
         $result = $stmt->execute($execute);
         
@@ -407,16 +412,6 @@
         return $res;
       }
     }// sign user optinal data
-
-    public static function set_session($name, $value) {
-      if (!isset($_SESSION)) {
-        session_start();
-      }
-      if (isset($_SESSION[$name])) {
-        unset($_SESSION[$name]);
-      }
-      return $_SESSION[$name] = $value;
-    }
     
     public static function delete_session($name) {
       if (!isset($_SESSION)) {

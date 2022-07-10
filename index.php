@@ -89,6 +89,25 @@ $router->get("/login", function () {
 	}
 
 });
+$router->get("/user/profile", function () {
+	include_once MODELS_PATH . "user.php";
+
+	if (Router::isset_session("user")) {
+
+		$errors = Router::get_session("user/errors", true);
+
+		Template::view("profile", 4, [
+			"custom_style" 	=> "login.css",
+			"errors" 				=> $errors,
+		]);
+
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("location: " . Router::route("404"));
+		exit();
+	}
+
+});
 $router->get_admin("/dashboard", function () {
 	include_once MODELS_PATH . "comment.php";
 	include_once MODELS_PATH . "user.php";
@@ -265,12 +284,12 @@ $router->post("/login", function ($args) {
 	$user = new User();
 	$res = $user->login($args);
 	if ($res["success"]) {
-		$user::set_session("user", serialize($res["user"]));
+		Router::set_session("user", serialize($res["user"]));
 		header("Location: " . Router::route(""));
 		exit();
 	}else {
-		User::set_session("user/login/info", $res["login_holder"]);
-		User::set_session("user/login/errors", $res["login_errors"]);
+		Router::set_session("user/login/info", $res["login_holder"]);
+		Router::set_session("user/login/errors", $res["login_errors"]);
 		header("Location: " . Router::route("login"));
 	}
 	exit();
@@ -286,7 +305,7 @@ $router->post("/signup", function ($args) {
 		$res = $user->signup_stage_two($args);
 		
 		if ($res["success"]) {
-			User::set_session("user", serialize($res["user"]));
+			Router::set_session("user", serialize($res["user"]));
 			header("Location: " . Router::route(""));
 			exit();
 		}
@@ -301,10 +320,47 @@ $router->post("/signup", function ($args) {
 		}
 	}
 
-	User::set_session("user/signup/errors", $res["errors"]);
-	User::set_session("user/signup/info", $res["signup_holder"]);
+	Router::set_session("user/signup/errors", $res["errors"]);
+	Router::set_session("user/signup/info", $res["signup_holder"]);
 	header("Location: " . Router::route("login#signup"));
 		
+});
+$router->post("/user/profile", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	if (Router::isset_session("user")) {
+		// $user = new User();
+		$user = Router::get_user();
+
+		$args["user_id"] = $user->id;
+		$res = $user->set_update($args);
+		
+		if ($res["success"]) {
+			$res = $user->save();
+			if ($res["success"]) {
+				$user->image = $user->image["new_name"];
+				Router::set_session("user", serialize($user));
+				header("Location: " . Router::route("user/profile"));
+				exit();
+			}else {
+				Router::set_session("user/errors", $res["errors"]);
+				header("Location: " . Router::route("user/profile"));
+				exit();
+			}
+			// Router::set_session("user", serialize($res["user"]));
+			// header("Location: " . Router::route(""));
+			exit();
+		}else {
+			Router::set_session("user/errors", $res["errors"]);
+			header("Location: " . Router::route("user/profile"));
+			exit();
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("login"));
+		exit();
+	}
+	
 });
 $router->post("/dashboard/login", function ($args) {
 	
@@ -320,6 +376,71 @@ $router->post("/dashboard/login", function ($args) {
 		header("Location: " . Router::route("dashboard/login"));
 	}
 	exit();
+
+});
+$router->post("/add/comment", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	include_once MODELS_PATH . "comment.php";
+	
+	$user = unserialize(Router::get_session("user", false));
+	if ($user != null) {
+		$comment = $args["comment"] ?? null;
+		if (!empty($comment) && is_string($comment) && strlen($comment) > 0) {
+
+			$comment = Comment::valid_comment($comment);
+			
+			if (is_string($comment) && strlen($comment) > 0) {
+				$replaid_id = isset($args["replied_id"]) ? abs(intval($args["replied_id"])) : null;
+				$article_id = isset($args["article_id"]) ? abs(intval($args["article_id"])) : null;
+				if (is_numeric($replaid_id) && $replaid_id > 0) {
+					$res = Comment::add_comment($user->id, $comment, $article_id, $replaid_id);
+				}else {
+					$res = Comment::add_comment($user->id, $comment, $article_id);
+				}
+				if ($res) {
+					echo json_encode(["success" => true,]);
+				}else {
+					echo json_encode(["success" => false,"errors" => "something went wrong!"]);
+					exit();
+				}
+			}else {
+				echo json_encode(["success" => false,"errors" => "comment is not valid!"]);
+				exit();
+			}
+		}else {
+			echo json_encode(["success" => false,"errors" => "comment cannot be sent empty!"]);
+			exit();
+		}
+		exit();
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		echo json_encode(["success" => false]);
+		exit();
+	}
+
+});
+$router->post("/comment/replies", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	include_once MODELS_PATH . "comment.php";
+	
+	$user = unserialize(Router::get_session("user", false));
+	if ($user != null) {
+		
+		$comment_id = intval($args["comment_id"]) ?? null;
+		if (!empty($comment_id) && is_numeric($comment_id) && $comment_id > 0) {
+			echo json_encode(Comment::get_replies($comment_id, intval($args["offset"])));
+		}else {
+			echo json_encode(["success" => false,"errors" => "something went wrong!"]);
+			exit();
+		}
+		exit();
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		echo json_encode(["success" => false]);
+		exit();
+	}
 
 });
 $router->post("/admin/profile", function ($args) {
