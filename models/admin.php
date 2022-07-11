@@ -7,7 +7,6 @@ class Admin {
   private $password;
   private $email;
   public  $image;
-  private $token;
   private $login;
   private $image_uploaded = false;
   private $password_updated = false;
@@ -75,14 +74,6 @@ class Admin {
     }
   }
 
-  public static function isset_admin_session() {
-    if (isset($_SESSION["admin"]) && !empty($_SESSION["admin"])) {
-      return true;
-    }else {
-      return false;
-    }
-  }
-
   public static function set_errors($errors) {
 
     if (!isset($_SESSION)) {
@@ -103,6 +94,9 @@ class Admin {
   }
 
   public static function get_admin_session($selection = null) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     if (isset($selection) && $selection != null && is_string($selection)) {
       return unserialize(base64_decode($_SESSION["admin"]))->$selection ?? null;
     }else {
@@ -124,6 +118,9 @@ class Admin {
   }
 
   public static function set_admin_session($admin) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     return $_SESSION["admin"] = base64_encode(serialize($admin));
   }
 

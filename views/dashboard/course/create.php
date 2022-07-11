@@ -1,7 +1,10 @@
-<form action="<?= Router::route("api/course");?>" method="POST">
-  <input type="hidden" name="token" value="<?= $token;?>">
+<form action="<?= Router::route("api/course");?>" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="action" value="create">
   <div class="form row">
+    <div class="image">
+      <img id="image" src="<?= Router::route("uploads/img/article-default.jpg");?>" alt="user image">
+      <button type="button" id="change-image" class="change-image btn btn-circle btn-primary"><i class="fa-solid fa-camera"></i></button>
+    </div>
     <div class="input-box <?= isset($errors["title"]) ? "is-wrong": "";?>">
       <label for="title">title</label>
       <input type="text" name="course_title" id="title" placeholder="Course Title" value="<?= $info_holder["title"] ?? "";?>" >

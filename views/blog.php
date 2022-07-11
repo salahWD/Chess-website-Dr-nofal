@@ -11,14 +11,14 @@
       <?php foreach($articles as $article):?>
         <div class="card">
           <div class="card-img">
-            <img src="<?php echo Router::route("img/") . $article->image;?>" alt="">
+            <img src="<?php echo Router::route("uploads/img/") . $article->image;?>" alt="">
             <span class="type"><?php echo $article->tag;?></span>
           </div>
           <div class="card-info">
             <a class="title" href="<?php echo Router::route("blog/$article->url_title");?>">
               <h3 class="m-0"><?php echo $article->title;?></h3>
             </a>
-            <span class="date"><i class="fas fa-calendar-alt"></i> <?php echo $article->date;?>April 21, 2022</span>
+            <span class="date"><i class="fas fa-calendar-alt"></i> <?php echo $article->date;?></span>
             <p class="desc"><?php echo $article->description;?></p>
             <a href="<?php echo Router::route("blog/$article->url_title");?>" class="btn c-prim btn-transparent">Read More <i class="jki jki-arrow-right-light"></i></a>
           </div>

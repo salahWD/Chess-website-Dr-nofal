@@ -7,7 +7,13 @@ textarea, textarea:focus, textarea:active, textarea:hover {
   border: 1px solid #bdbdbd3d !important;
   outline: none !important;
 }
-
+.login-btn {
+  display:flex;
+  column-gap: 10px;
+  align-items:center;
+  justify-content: center;
+  text-transform: lowercase;
+}
 section.article {
   padding-top: 60px;
 }
@@ -17,12 +23,15 @@ section.article .container {
   margin: auto;
 }
 section.article .image {
-  width: 100%;
+  max-width: 550px;
+  max-height: 550px;
 }
 section.article .image img {
   object-position: center center;
   margin-bottom: 20px;
   object-fit: cover;
+  max-height: 100%;
+  max-width: 100%;
   display: block;
   height: 100%;
   width: 100%;
@@ -58,6 +67,26 @@ section.article .content h3 {
 section.article .content h4 {
   font-size: 24px;
   margin-bottom: 16px;
+}
+section.article .content figure.stretched {
+  width: 100%;
+  margin: 0;
+}
+section.article .content figure {
+  text-align: center;
+  overflow: hidden;
+}
+section.article .content figure img {
+  object-position: center center;
+  max-height: 500px;
+  object-fit: cover;
+  max-width: 450px;
+  display: block;
+  margin: 0 auto 10px;
+  width: 100%;
+}
+section.article .content figure.stretched img {
+  min-width: 100%;
 }
 section.article .divider {
   margin: 35px 0;
@@ -101,6 +130,35 @@ section.article .article-info .share .btns .btn {
   width: 40px;
   padding: 0;
 }
+section.article .article-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+section.article .article-actions .likes {
+  padding: 0 20px;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+section.article .article-actions .likes .number {
+  color: var(--global-color-text-dark);
+  font-weight: bold;
+  font-size: 20px;
+  font-family: var(--global-font-sec);
+  margin-right: 4px;
+}
+section.article .article-actions .likes .like {
+  color: var(--global-color-text-dark);
+  font-size: 36px;
+  padding: 5px;
+}
+section.article .article-actions .likes .like.active {
+  transition: 0.2s;
+  color: rgb(228, 84, 84);
+}
+section.article .article-actions .title,
 section.article .comments .title {
   color: var(--global-color-text-dark);
   font-family: var(--global-font-sec);

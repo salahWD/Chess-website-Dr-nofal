@@ -25,7 +25,7 @@
   <div class="articles items-box">
     <h2 class="title">manage all courses</h2>
     <div class="table">
-      <div class="header" id="manage-table" data-type="1" data-token="<?= $token;?>">
+      <div class="header" id="manage-table" data-type="1">
         <h3 class="title">title</h3>
         <h3 class="title">create date</h3>
         <h3 class="title">status</h3>

@@ -79,7 +79,7 @@ function createCommentElement(src = "http://drnofal.test/uploads/img/unknown.jpg
 
 }
 
-function insertreply(formEl, reply_on, parent) {
+function insertreply(formEl, reply_on, parent, trig) {
   form = new FormData(formEl);
   form.append("replied_id", reply_on);
   let article_id = document.getElementById("comment-form").querySelector("input[name=\"article_id\"]").value;
@@ -92,6 +92,7 @@ function insertreply(formEl, reply_on, parent) {
     .then(function (data) {
       let response = JSON.parse(data);
       window.toggler = true;
+      trig.canOpen = true;
       if (response.success) {
         let src = parent.querySelector(".profile img").getAttribute("src");
         let name = parent.querySelector(".profile .user-name").innerText;
@@ -200,7 +201,7 @@ function showReplies(parent, replyData) {
 
 }
 
-function showCommentForm(btn) {
+function showCommentForm(btn, trig) {
 
   if (!btn.parentElement.querySelector("form textarea")) {
     let formContrainer = document.createElement("div");
@@ -208,7 +209,7 @@ function showCommentForm(btn) {
 
     let form = document.createElement("form");
     form.setAttribute("action", "http://drnofal.test/add/comment");
-    form.setAttribute("method", "POSt");
+    form.setAttribute("method", "POST");
 
     formContrainer.appendChild(form);
     
@@ -232,13 +233,14 @@ function showCommentForm(btn) {
       this.parentElement.parentElement.classList.add("remove");
       setTimeout(() => {
         this.parentElement.parentElement.remove();
+        trig.canOpen = true;
       }, 1000);
     });
 
     let sendBtn = document.createElement("button");
     sendBtn.classList.add("btn", "btn-warning");
     sendBtn.setAttribute("type", "button");
-    sendBtn.innerHTML = "<i class=\"fa-solid fa-paper-plane\"></i> comment";
+    sendBtn.innerHTML = "<i class=\"fa-solid fa-paper-plane\"></i> reply";
     btnsContainer.appendChild(sendBtn);
 
     btn.parentElement.appendChild(form);
@@ -246,7 +248,7 @@ function showCommentForm(btn) {
     sendBtn.addEventListener("click", function () {
       if (window.toggler) {
         window.toggler = false;
-        insertreply(this.parentElement.parentElement, this.parentElement.parentElement.parentElement.parentElement.querySelector("input.id").value, this.parentElement.parentElement.parentElement.parentElement);
+        insertreply(this.parentElement.parentElement, this.parentElement.parentElement.parentElement.parentElement.querySelector("input.id").value, this.parentElement.parentElement.parentElement.parentElement, trig);
         setTimeout(() => {
           window.toggler = true;
         }, 3500);
@@ -345,6 +347,23 @@ function firestActiveForm(activeFormId) {
   
 }
 
+function addLike(id) {
+
+  let form = new FormData();
+  form.append("article_id", id);
+  fetch("http://drnofal.test/add/like", {
+    method: "POST",
+    body: form,
+  }).then(res=>res.text())
+    .then(function (data) {
+      let response = JSON.parse(data);
+      if (response.success) {
+        window.liketrig = true;
+      }
+  });
+
+}
+
 let header = $("#header")[0];
 let overlay = $("#header-overlay")[0];
 
@@ -417,35 +436,72 @@ window.addEventListener("load", function () {
 
   if ($("#comment-form")[0]) {
     let trig = true;
-    $("#comment-send")[0].addEventListener("click", function (e) {
-      e.preventDefault();
-      if (trig) {
-        trig = false;
-        this.style.minWidth = `${this.getBoundingClientRect().width}px`;
-        this.innerHTML = `<i class="load fa fa-spinner"></i>`;
-        insertComment(this);
-        setTimeout(() => {
-          trig = true;
-        }, 3500);
-      }
-    });
+    if ($("#comment-send")[0]) {
+      $("#comment-send")[0].addEventListener("click", function (e) {
+        e.preventDefault();
+        if (trig) {
+          trig = false;
+          this.style.minWidth = `${this.getBoundingClientRect().width}px`;
+          this.innerHTML = `<i class="load fa fa-spinner"></i>`;
+          insertComment(this);
+          setTimeout(() => {
+            trig = true;
+          }, 3500);
+        }
+      });
+    }
     $("#comment")[0].addEventListener("focus", function (e) {
       $(`.input-holder`)[0].classList.remove("is-wrong");
     });
 
-    if ($(".comments .comment").length > 0) {
-      let repliesBtns = $(".comments .show-replies-btn");
-      repliesBtns.forEach(btn => {
-        let replyData = {offsetCounter: 1, trigger: true};
+    if ($(".comments .reply-btn").length > 0) {
+      let replyBtns = $(".comments .reply-btn");
+      replyBtns.forEach(btn => {
+        let trig = {canOpen: true};
         btn.addEventListener("click", function () {
-          if (replyData.trigger) {
-            showReplies(this.parentElement.parentElement, replyData);
-            replyData.trigger = false;
+          if (trig.canOpen) {
+            showCommentForm(this, trig);
+            trig.canOpen = false;
           }
         });
       });
     }
 
+  }
+
+  if ($(".comments .show-replies-btn").length > 0) {
+    let repliesBtns = $(".comments .show-replies-btn");
+    repliesBtns.forEach(btn => {
+      let replyData = {offsetCounter: 1, trigger: true};
+      btn.addEventListener("click", function () {
+        if (replyData.trigger) {
+          showReplies(this.parentElement.parentElement, replyData);
+          replyData.trigger = false;
+        }
+      });
+    });
+  }
+
+
+  if ($("#like-btn")[0]) {
+    window.liketrig = true;
+    let likesNumber = $("#like-btn")[0].parentElement.querySelector(".number");
+    let article_id = document.getElementById("comment-form").querySelector("input[name=\"article_id\"]").value;
+    $("#like-btn")[0].addEventListener("click", function () {
+      if (window.liketrig) {
+        window.liketrig = false;
+        addLike(article_id);
+        let icon = this.querySelector(".icon");
+        this.classList.toggle("active");
+        if (this.classList.contains("active")) {
+          likesNumber.innerText = +likesNumber.innerText + 1;
+          icon.classList.replace("fa-regular", "fa-solid");
+        }else {
+          likesNumber.innerText = +likesNumber.innerText - 1;
+          icon.classList.replace("fa-solid", "fa-regular");
+        }
+      }
+    });
   }
 
 });

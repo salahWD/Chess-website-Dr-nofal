@@ -1,5 +1,4 @@
 <form id="user" action="<?= Router::route("api/course");?>" method="POST">
-  <input type="hidden" name="token" value="<?= $token;?>">
   <div class="form row">
     <div class="info">
       <div class="item image">

@@ -16,8 +16,9 @@ class Blog {
   public static function get_article_title($title = "no-title") {
     $db = DB::get_instance();
     $sql = $db->prepare(
-      "SELECT articles.*, admins.name FROM articles
+      "SELECT articles.*, admins.name, COUNT(LIKES.article_id) AS likes FROM articles
       INNER JOIN admins ON admins.id = articles.writer
+      LEFT JOIN article_likes LIKES ON LIKES.article_id = articles.id
       WHERE articles.url_title = ?");
     $sql->execute([$title]);
     if ($sql->rowCount() > 0) {

@@ -26,7 +26,7 @@ class Form {
 
     $mime 			= ["image/jpeg", "image/png", "image/webp"];
     $exts_name 	= ["jpeg", "jpg", "png", "webp"];
-    $ext = "";
+    $ext        = "";
     $error 			= [];
 
     if (isset($image["type"]) && is_string($image["type"])) {
@@ -36,7 +36,7 @@ class Form {
     }
 
     if (isset($image["name"]) && is_string($image["name"])) {
-      $name_arr 	=  explode(".", $image["name"]);
+      $name_arr 	= explode(".", $image["name"]);
       $ext 				= end($name_arr);
       if (!in_array($ext, $exts_name)) {
         $error[] = "file type is not allowed, only (" . implode(", ", $exts_name) . ") is allowed";

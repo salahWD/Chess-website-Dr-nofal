@@ -539,5 +539,20 @@ body {
         --table-cols: calc(100% / 11) calc((100% / 11) * 3) calc((100% / 11) * 3) calc((100% / 11) * 2) calc((100% / 11) * 2);
       }
     }
+    .content {
+      .image-tool--filled {
+        max-height: 550px;
+        overflow: hidden;
+        .image-tool__image {
+          min-width: 100%;
+        }
+      }
+      .image-tool--stretched {
+        min-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
   }
 }

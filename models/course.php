@@ -2,7 +2,6 @@
 
 class Course {
   public $id;
-  public $image;
   public $title;
   public $description;
   public $price;
@@ -10,6 +9,8 @@ class Course {
   public $date;
   public $active;
   public $duration;
+  public $image = "course-dafault.jpg";
+  private $image_uploaded = false;
 
   public static function get_active_course(int $id) {
     $db = DB::get_instance();
@@ -53,6 +54,9 @@ class Course {
   }
 
   public static function set_errors_session($data) {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     if (isset($_SESSION["course/errors"])) {
       unset($_SESSION["course/errors"]);
     }
@@ -134,6 +138,17 @@ class Course {
       $errors["description"] = "description is invalid!";
     }
 
+    if (isset($data["image"]) && !empty($data["image"])) {
+      $image = Form::valid_image($data["image"]);
+
+      if ($image["success"]) {
+        $this->image = $image["info"];// data = ["new_name", "tmp_name"]
+        $this->image_uploaded = true;
+      }else {
+        $errors["image"] = $image["errors"];// error code 3
+      }
+    }
+
     $this->active = isset($data["active"]) && $data["active"] == 1 ? 1 : 0;
 
     $info = [
@@ -152,20 +167,40 @@ class Course {
 
   public function insert() {
     $db = DB::get_instance();
-    $sql = $db->prepare(
-      "INSERT INTO courses (title, price, description, date)
-      VALUES (?, ?, ?, NOW())");
-    $sql->execute([
-      $this->title,
-      $this->price,
-      $this->description
-    ]);
+
+    $sql = $db->prepare("SELECT id FROM courses WHERE title = ?");
+    $sql->execute([$this->title]);
 
     if ($sql->rowCount() > 0) {
-      return ["success" => true, "id" => $db->lastInsertId()];
+      return ["success" => false, "errors" => ["title" => "this name is taken"]];
     }else {
-      return ["success" => false];
-    }
+
+      $execute = [
+        ":tit"  => $this->title,
+        ":des"  => $this->description,
+        ":pri"  => $this->price,
+      ];
+
+      $image = "";
+      if ($this->image_uploaded) {
+        $image_nam = ", image";
+        $image_val = ", :ima";
+        $execute[":ima"] = $this->image["new_name"];
+        move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
+      }
+
+      $sql = $db->prepare(
+        "INSERT INTO courses (title, price, description, date $image_nam)
+        VALUES (:tit, :pri, :des, NOW() $image_val)");
+      $res = $sql->execute($execute);
+
+      if ($res) {
+        return ["success" => true, "id" => $db->lastInsertId()];
+      }else {
+        return ["success" => false];
+      }
+
+    } 
 
   }
 
@@ -178,16 +213,24 @@ class Course {
 
     if ($stmt->rowCount() == 0) {
 
+      $execute = [
+        ":tit"  => $this->title,
+        ":des"  => $this->description,
+        ":pri"  => $this->price,
+        ":act"  => $this->active,
+        ":id"   => $this->id
+      ];
+
+      $image = "";
+      if ($this->image_uploaded) {
+        $image = ", image = :ima";
+        $execute[":ima"] = $this->image["new_name"];
+        move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
+      }
+
       $sql = $db->prepare(
-        "UPDATE courses SET title = ?, description = ?, price = ?, active = ?
-        WHERE id = ?");
-      $res = $sql->execute([
-        $this->title,
-        $this->description,
-        $this->price,
-        $this->active,
-        $this->id
-      ]);
+        "UPDATE courses SET title = :tit, description = :des, price = :pri, active = :act $image WHERE id = :id");
+      $res = $sql->execute($execute);
 
       return ["success" => $res];
     }else {

@@ -37,22 +37,22 @@
           <a href="#" class="btn btn-warning"><i class="jki jki-whatsapp-1-light"></i></a>
         </div>
       </div>
-      <form class="form">
+      <form class="form" action="<?= Router::route("");?>" method="GET">
         <div class="input-box">
           <label for="name">name</label>
-          <input type="text" name="name" id="name" placeholder="Your Name">
+          <input type="text" id="name" placeholder="Your Name">
         </div>
         <div class="input-box">
           <label for="email">email</label>
-          <input type="email" name="email" id="email" placeholder="you@company.com">
+          <input type="email" id="email" placeholder="you@company.com">
         </div>
         <div class="input-box">
           <label for="subject">subject</label>
-          <input type="text" name="subject" id="subject" placeholder="subject">
+          <input type="text" id="subject" placeholder="subject">
         </div>
         <div class="input-box">
           <label for="massage">massage</label>
-          <textarea name="massage" id="massage" placeholder="massage"></textarea>
+          <textarea id="massage" placeholder="massage"></textarea>
         </div>
         <button type="submit" class="btn btn-warning">send massage</button>
       </form>

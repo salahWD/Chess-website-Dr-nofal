@@ -24,7 +24,7 @@
 <div class="row">
   <div class="articles items-box">
     <h2 class="title">manage all articles</h2>
-    <div class="table" id="manage-table" data-type="0" data-token="<?= $token;?>">
+    <div class="table" id="manage-table" data-type="0">
       <div class="header">
         <h3 class="title">title</h3>
         <h3 class="title">create date</h3>

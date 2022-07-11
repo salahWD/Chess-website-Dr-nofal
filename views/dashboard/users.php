@@ -18,7 +18,7 @@
 <div class="row">
   <div class="users items-box">
     <h2 class="title">manage all users</h2>
-    <div class="table" id="manage-table" data-type="2" data-token="<?= $token;?>">
+    <div class="table" id="manage-table" data-type="2">
       <div class="header">
         <h3 class="title">image</h3>
         <h3 class="title">name</h3>

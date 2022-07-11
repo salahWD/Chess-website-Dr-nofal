@@ -10,9 +10,11 @@
     public $tag;// type or main tag
     public $tags;// tags of the article
     public $active;
-    public $image;
+    public $image = "article-default.jpg";
+    public $image_uploaded = false;
     public $content;
     public $likes;// likes count
+    public $is_liked = false;// is user liked this article
 
     private function isJson($string) {
       json_decode($string);
@@ -59,6 +61,7 @@
         $image = Form::valid_image($data["image"]);
         if ($image["success"]) {
           $this->image = $image["info"];// data = ["new_name", "tmp_name"]
+          $this->image_uploaded = true;
         }else {
           $errors["image"] = $image["errors"];// error code 3
         }
@@ -93,6 +96,8 @@
       
       $content_col = "";
       $content_param = "";
+      $image_col = "";
+      $image_param = "";
       
       $params_array = [
         ":title"        => $this->title,
@@ -109,12 +114,19 @@
         $params_array[":content"] = $this->content;
       }
 
+      if ($this->image_uploaded) {
+        $image_col = ", image";
+        $image_param = ",:image";
+        $params_array[":image"] = $this->image["new_name"];
+        move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
+      }
+      
       $sql = $db->prepare("SELECT id FROM articles WHERE url_title = ?");
       $sql->execute([$this->url_title]);
-
+      
       if ($sql->rowCount() == 0) {
-        $sql = $db->prepare("INSERT INTO articles (`title`, `url_title`, `description`, `tag`, `writer`, `date`, `active` $content_col)
-        VALUES (:title, :url_title, :description, :tag, :writer, NOW(), 0 $content_param)");
+        $sql = $db->prepare("INSERT INTO articles (`title`, `url_title`, `description`, `tag`, `writer`, `date`, `active` $image_col $content_col)
+        VALUES (:title, :url_title, :description, :tag, :writer, NOW(), 0 $image_param $content_param)");
         $result = $sql->execute($params_array);
         if ($result) {
           return ["success" => true, "id" => $db->lastInsertId()];
@@ -138,11 +150,7 @@
 
       if ($stmt->rowCount() == 0) {
       
-        $sql = "UPDATE articles SET title = :title, url_title = :url_title, description = :desc, tag = :tag,
-        active = :active, content = :content WHERE id = :id";// , image = :image
-
-        $stmt = $db->prepare($sql);
-        $result = $stmt->execute([
+        $execute = [
           ":title"      => $this->title,
           ":url_title"  => $this->url_title,
           ":desc"       => $this->description,
@@ -150,7 +158,21 @@
           ":active"     => $this->active,
           ":content"    => $this->content,
           ":id"         => $this->id,
-        ]);
+        ];
+
+        $image_col = "";
+
+        if ($this->image_uploaded) {
+          $image_col = ", image = :image";
+          $execute[":image"] = $this->image["new_name"];
+          move_uploaded_file($this->image["tmp_name"], UPLOADS_IMAGES . $this->image["new_name"]);
+        }
+        
+        $sql = "UPDATE articles SET title = :title, url_title = :url_title, description = :desc, tag = :tag,
+        active = :active, content = :content $image_col WHERE id = :id";
+
+        $stmt = $db->prepare($sql);
+        $result = $stmt->execute($execute);
         
         return ["success" => $result];
 
@@ -253,6 +275,46 @@
       }else {
         return false;
       }
+    }
+
+    public static function like($article_id, $user_id) {
+
+      $res = false;
+      $liked;
+      $db = DB::get_instance();
+      $sql = $db->prepare("SELECT * FROM article_likes WHERE user_id = ? AND article_id = ?");
+      $sql->execute([$user_id, $article_id]);
+      
+      if ($sql->rowCount() > 0) {
+        $sql = $db->prepare("DELETE FROM article_likes WHERE user_id = ? AND article_id = ?");
+        $res = $sql->execute([$user_id, $article_id]);
+        $liked = false;
+      }else {
+        $sql = $db->prepare("INSERT INTO article_likes (user_id, article_id) VALUES (?, ?)");
+        $res = $sql->execute([$user_id, $article_id]);
+        $liked = true;
+      }
+
+      return ["success" => $res, "liked" => $liked];
+
+    }
+
+    public function is_liked($user_id) {
+
+      if (is_numeric(intval($user_id)) && intval($user_id) > 0) {
+
+        $db = DB::get_instance();
+        $sql = $db->prepare("SELECT * FROM article_likes WHERE user_id = ? AND article_id = ?");
+        $sql->execute([$user_id, $this->id]);
+  
+        $res = $sql->rowCount() > 0;
+        $this->is_liked = $res;
+        return $res;
+
+      }else {
+        return false;
+      }
+
     }
 
   }

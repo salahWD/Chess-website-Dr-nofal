@@ -174,7 +174,7 @@ class Router {
     if (isset($_SESSION["user"])) {
       include_once MODELS_PATH . "user.php";
       $user = $_SESSION["user"];
-      return unserialize($user);
+      return unserialize(base64_decode($user));
     }else {
       return null;
     }

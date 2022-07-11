@@ -1,7 +1,7 @@
 $dangerB: #dc3545;
 .form {
   --error-color: #dc3545;
-  padding: 50px 50px 50px 50px;
+  padding: 30px 50px 50px 50px;
   border-color: #EDEDED;
   align-items: flex-start;
   flex-direction: column;
@@ -18,7 +18,7 @@ $dangerB: #dc3545;
     border-bottom: 1px solid hsl(0deg 0% 74% / 40%);
     padding-bottom: 20px;
     justify-content: space-evenly;
-    margin: 0 0 30px 0;
+    margin: 0 0 60px 0;
     display: flex;
     width: 100%;
     .icon {
@@ -154,6 +154,32 @@ $dangerB: #dc3545;
   }
   .content {
     font-family: var(--global-font-sec);
+  }
+  .image {
+    margin-right: 20px;
+    object-position: center center;
+    object-fit: cover;
+    max-width: 180px;
+    max-height: 180px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    margin: 0 auto 40px auto;
+    img {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      object-position: center center;
+    }
+    .change-image {
+      min-width: 40px;
+      min-height: 40px;
+      margin-left: -35px;
+      display: block;
+      padding: 0;
+    }
   }
 }
 #user, #form-signup {

@@ -44,7 +44,7 @@ function removeErrors(url) {
   }, 1400);
 }
 
-function deleteItemConfirm(type, id, token, element) {
+function deleteItemConfirm(type, id, element) {
   
   let container = document.createElement("div");
   container.classList.add("relative-container");
@@ -70,7 +70,7 @@ function deleteItemConfirm(type, id, token, element) {
   yes.innerHTML = "delete <i class=\"fa fa-trash\"></i>";
 
   yes.addEventListener("click", function () {
-    deleteItem(type, id, token, element);
+    deleteItem(type, id, element);
     this.parentElement.parentElement.parentElement.remove();
   });
 
@@ -92,11 +92,10 @@ function deleteItemConfirm(type, id, token, element) {
 
 }
 
-function deleteItem(type, id, token, element) {
+function deleteItem(type, id, element) {
   const items = ["article", "course", "user"];
   let form = new FormData();
   form.append("action", "delete");
-  form.append("token", token);
   form.append(`${items[type]}_id`, id);
   fetch(`http://drnofal.test/api/${items[type]}`, {
     method: "POST",
@@ -137,7 +136,6 @@ function savingCourse(courseId) {
         removeErrors("http://drnofal.test/dashboard/courses");
       }else {
         if (Object.entries(response.errors).length > 0) {
-          console.log(response.errors);
           for(const [errName, errVal] of Object.entries(response.errors)) {
             console.log(`${errName}: ${errVal}`);
             showError(errName, errVal);
@@ -148,12 +146,11 @@ function savingCourse(courseId) {
 
 }
 
-function savingData(editor, token, articleId) {
+function savingData(editor, articleId) {
 
   editor.save().then((articleContent) => {
     let form = new FormData($("form"));
     form.append("action", "update");
-    form.append("token", token);
     form.append("article_id", articleId);
     form.append("content", JSON.stringify(articleContent));
     fetch("http://drnofal.test/api/article", {
@@ -165,7 +162,7 @@ function savingData(editor, token, articleId) {
         if (response.success) {
           removeErrors("http://drnofal.test/dashboard/articles");
         }else {
-          console.log(response.errors);
+          console.error(response.errors);
           if (Object.keys(response.errors).length > 0) {
             for (const [errName, errVal] of Object.entries(response.errors)) {
               showError(errName, errVal);
@@ -204,13 +201,12 @@ function savingUser(userId) {
 
 }
 
-async function getContent(token, articleId) {
+async function getContent(articleId) {
 
   try {
 
     let req = new FormData();
     req.append("action", "get_content");
-    req.append("token", token);
     req.append("article_id", articleId);
 
     let res = await fetch("http://drnofal.test/api/article", {
@@ -264,11 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }// image input
   
   if ($("#content")) {
-    const TOKEN = $("#token").value;
     const articleId = window.location.pathname.split("/")[3];// <= id is 3 ['', dashboard, article, 3]
     let trigger = true;
 
-    getContent(TOKEN, articleId).then(text =>{
+    getContent(articleId).then(text =>{
 
       let data;
       try {
@@ -312,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
           trigger = true;
         }, 3000);
-        savingData(window.editor, TOKEN, articleId);
+        savingData(window.editor, articleId);
       }
     });
   
@@ -322,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
           trigger = true;
         }, 3000);
-        savingData(window.editor, TOKEN, articleId);
+        savingData(window.editor, articleId);
       }
     });
 
@@ -388,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
             trigger = true;
           }, 2500);
 
-          deleteItemConfirm(type, id, table.dataset.token, this);
+          deleteItemConfirm(type, id, this);
 
         }
       })

@@ -42,17 +42,21 @@ $router->get("/blog", function () {
 $router->get("/blog/{param}", function ($params) {
 	include_once MODELS_PATH . "blog.php";
 	include_once MODELS_PATH . "article.php";
+	
 	if (Router::isset_session("user")) {
 		include_once MODELS_PATH . "user.php";
-		$user = unserialize(Router::get_session("user", false));
+		$user = Router::get_user();
 	}
+
 	$article = Blog::get_article_title($params["param"]);
+	$article->is_liked($user->id ?? null);
 	$comments = Article::get_comments($article->id);
+
 	if ($article !== false) {
 		Template::view("article", 3, [
 			"custom_style" => "article.css",
 			"article" => $article,
-			"user" => $user,
+			"user" => $user ?? null,
 			"comments" => $comments,
 		]);
 	}else {
@@ -121,20 +125,18 @@ $router->get_admin("/dashboard/articles", function () {
 	include_once MODELS_PATH . "blog.php";
 	include_once MODELS_PATH . "admin.php";
 
-	$token = Admin::get_admin_session("token");
 	$articles = Blog::get_all_article();
 
 	Template::admin_view("dashboard/articles", 3, [
 		"custom_style" => "dashboard.css",
 		"articles" => $articles,
-		"token" => $token
 	]);
 });
 $router->get_admin("/dashboard/article/{id}", function ($args) {
 	include_once MODELS_PATH . "article.php";
 	$article = Article::get_article($args["id"]);
 	if ($article != false) {
-		Template::admin_view("dashboard/article/edit", 3, ["custom_style" => "dashboard.css", "article" => $article, "token" => 'B&!$UmU+36']);
+		Template::admin_view("dashboard/article/edit", 3, ["custom_style" => "dashboard.css", "article" => $article]);
 	}else {
 		header("HTTP/1.0 404 Not Found");
 		header("Location: " . Router::route("404"));
@@ -145,13 +147,11 @@ $router->get_admin("/dashboard/article/create", function ($args) {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "article.php";
 	
-	$token 		= Admin::get_admin_session("token");
 	$errors 	= Article::get_errors_session();
 	$info 		= Article::get_info_holder_session();
 
 	Template::admin_view("dashboard/article/create", 3, [
 		"custom_style" => "dashboard.css",
-		"token" 		=> $token,
 		"article" 	=> $info,
 		"errors" 		=> $errors,
 	]);
@@ -163,12 +163,10 @@ $router->get_admin("/dashboard/courses", function () {
 	include_once MODELS_PATH . "admin.php";
 
 	$courses = Course::get_all_courses();
-	$token = Admin::get_admin_session("token");
 
 	Template::admin_view("dashboard/courses", 3, [
 		"custom_style" => "dashboard.css",
 		"courses" => $courses,
-		"token" => $token
 	]);
 });
 $router->get_admin("/dashboard/course/{id}", function ($args) {
@@ -176,14 +174,12 @@ $router->get_admin("/dashboard/course/{id}", function ($args) {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "course.php";
 
-	$token = Admin::get_admin_session("token");
 	$course = Course::get_course($args["id"]);
 
 	if ($course != false) {
 		Template::admin_view("dashboard/course/edit", 3, [
 			"custom_style" => "dashboard.css",
 			"course" => $course,
-			"token" => $token
 		]);
 	}else {
 		header("HTTP/1.0 404 Not Found");
@@ -196,14 +192,11 @@ $router->get_admin("/dashboard/course/create", function ($args) {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "course.php";
 
-	$token = Admin::get_admin_session("token");
-
 	$errors 	= Course::get_errors_session();
 	$info 		= Course::get_info_holder_session();
 
 	Template::admin_view("dashboard/course/create", 3, [
 		"custom_style" => "dashboard.css",
-		"token" => $token,
 		"errors" => $errors,
 		"info_holder" => $info,
 	]);
@@ -214,12 +207,10 @@ $router->get_admin("/dashboard/users", function () {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "user.php";
 
-	$token = Admin::get_admin_session("token");
 	$users = User::get_users();
 
 	Template::admin_view("dashboard/users", 3, [
 		"custom_style" => "dashboard.css",
-		"token" => $token,
 		"users" => $users,
 	]);
 
@@ -229,14 +220,12 @@ $router->get_admin("/dashboard/user/{id}", function ($args) {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "user.php";
 
-	$token = Admin::get_admin_session("token");
 	$user = User::get_user($args["id"]);
 
 	if ($user != false) {
 		Template::admin_view("dashboard/users/edit", 3, [
 			"custom_style" => "dashboard.css",
 			"user" => $user,
-			"token" => $token
 		]);
 	}else {
 		header("HTTP/1.0 404 Not Found");
@@ -257,7 +246,7 @@ $router->get("/dashboard/login", function () {
 
 	include_once MODELS_PATH . "admin.php";
 
-	if (Admin::isset_admin_session()) {
+	if (Router::isset_session("admin")) {
 		header("Location: " . Router::route("dashboard"));
 	}else {
 		$errors = Admin::get_errors();
@@ -284,7 +273,7 @@ $router->post("/login", function ($args) {
 	$user = new User();
 	$res = $user->login($args);
 	if ($res["success"]) {
-		Router::set_session("user", serialize($res["user"]));
+		Router::set_session("user", base64_encode(serialize($res["user"])));
 		header("Location: " . Router::route(""));
 		exit();
 	}else {
@@ -305,7 +294,7 @@ $router->post("/signup", function ($args) {
 		$res = $user->signup_stage_two($args);
 		
 		if ($res["success"]) {
-			Router::set_session("user", serialize($res["user"]));
+			Router::set_session("user", base64_encode(serialize($res["user"])));
 			header("Location: " . Router::route(""));
 			exit();
 		}
@@ -338,8 +327,8 @@ $router->post("/user/profile", function ($args) {
 		if ($res["success"]) {
 			$res = $user->save();
 			if ($res["success"]) {
-				$user->image = $user->image["new_name"];
-				Router::set_session("user", serialize($user));
+				$user = User::get_user($user->id);
+				Router::set_session("user", base64_encode(serialize($user)));
 				header("Location: " . Router::route("user/profile"));
 				exit();
 			}else {
@@ -347,8 +336,6 @@ $router->post("/user/profile", function ($args) {
 				header("Location: " . Router::route("user/profile"));
 				exit();
 			}
-			// Router::set_session("user", serialize($res["user"]));
-			// header("Location: " . Router::route(""));
 			exit();
 		}else {
 			Router::set_session("user/errors", $res["errors"]);
@@ -369,7 +356,7 @@ $router->post("/dashboard/login", function ($args) {
 	$res = $admin->login($args);
 	if ($res["success"]) {
 		session_start();
-		$admin::set_admin_session($res["admin"]);
+		Admin::set_admin_session($res["admin"]);
 		header("Location: " . Router::route("dashboard"));
 	}else {
 		Admin::set_errors($res["errors"]);
@@ -383,7 +370,7 @@ $router->post("/add/comment", function ($args) {
 	include_once MODELS_PATH . "user.php";
 	include_once MODELS_PATH . "comment.php";
 	
-	$user = unserialize(Router::get_session("user", false));
+	$user = Router::get_user();
 	if ($user != null) {
 		$comment = $args["comment"] ?? null;
 		if (!empty($comment) && is_string($comment) && strlen($comment) > 0) {
@@ -425,17 +412,9 @@ $router->post("/comment/replies", function ($args) {
 	include_once MODELS_PATH . "user.php";
 	include_once MODELS_PATH . "comment.php";
 	
-	$user = unserialize(Router::get_session("user", false));
-	if ($user != null) {
-		
-		$comment_id = intval($args["comment_id"]) ?? null;
-		if (!empty($comment_id) && is_numeric($comment_id) && $comment_id > 0) {
-			echo json_encode(Comment::get_replies($comment_id, intval($args["offset"])));
-		}else {
-			echo json_encode(["success" => false,"errors" => "something went wrong!"]);
-			exit();
-		}
-		exit();
+	$comment_id = intval($args["comment_id"]) ?? null;
+	if (!empty($comment_id) && is_numeric($comment_id) && $comment_id > 0) {
+		echo json_encode(Comment::get_replies($comment_id, intval($args["offset"])));
 	}else {
 		header("HTTP/1.0 404 Not Found");
 		echo json_encode(["success" => false]);
@@ -443,11 +422,34 @@ $router->post("/comment/replies", function ($args) {
 	}
 
 });
+$router->post("/add/like", function ($args) {
+	
+	if (Router::isset_session("user")) {
+
+		include_once MODELS_PATH . "user.php";
+		include_once MODELS_PATH . "article.php";
+		
+		$article_id = intval($args["article_id"]) ?? null;
+		$user = Router::get_user();
+	
+		if (!empty($article_id) && is_numeric($article_id) && $article_id > 0) {
+			echo json_encode(Article::like($article_id, $user->id));
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			echo json_encode(["success" => false]);
+			exit();
+		}
+
+	}else {
+		
+	}
+
+});
 $router->post("/admin/profile", function ($args) {
 
 	include_once MODELS_PATH . "admin.php";
 	
-	if (Admin::isset_admin_session()) {
+	if (Router::isset_session("admin")) {
 		$admin = new Admin();
 		$admin->set_id(Admin::get_admin_session("id"));
 		$result = $admin->set_data($args);
@@ -474,40 +476,48 @@ $router->post("/admin/profile", function ($args) {
 });
 $router->post("/api/article", function ($args) {
 
-	include_once CLASS_PATH . "permissionscheck.php";
+	$actions = ["create", "get_content", "delete", "update"];
+	if (Router::isset_session("admin") && isset($args["action"]) && in_array($args["action"], $actions)) {
 
-	$request = PermissionsCheck::is_valid_api_request($args, ["create", "get_content", "delete", "update"]);
-	if ($request["success"]) {
+		include_once MODELS_PATH . "article.php";
+		include_once MODELS_PATH . "admin.php";
 
-		include MODELS_PATH . "article.php";
-		
+		$id = Admin::get_admin_session("id");
+
 		$model = new Article();
-		$action = $request["action"];
+		$action = $args["action"];
 		
 		if ($action == "create") {
 
 			$result = $model->set($args);
 
 			if ($result["success"]) {
-				$inserted = $model->insert($request["id"]);
+				$inserted = $model->insert($id);
 				if ($inserted["success"]) {
 					header("Location: " . Router::route("dashboard/article/" . $inserted["id"]));
 					exit();
 				}else {
-					Article::set_errors_session($inserted["error"]);
+					Article::set_errors_session($inserted["errors"]);
 				}
 			}else {
 				Article::set_errors_session($result["errors"]);
 			}
 			Article::set_info_holder_session($result["info_holder"]);
 			header("Location: " . Router::route("dashboard/article/create"));
+			exit();
 			// $result = $admin->create_article($args);// the request coming from admin class to article class automaticly
 
 		}else if ($action == "get_content") {
-			$content = Article::get_content($args["article_id"]);
-			echo json_encode(["success" => $content["success"], "content" => $content["content"] ?? "", "error" => $content["error"] ?? ""]);
+			if (isset($args["article_id"]) && is_numeric(intval($args["article_id"])) && intval($args["article_id"]) > 0) {
+				$content = Article::get_content($args["article_id"]);
+				echo json_encode(["success" => $content["success"], "content" => $content["content"] ?? "", "error" => $content["error"] ?? ""]);
+			}else {
+				header("HTTP/1.1 404 Not Found");
+				echo json_encode(["success" => false, "content" => "", "error" => 1]);
+				exit();
+			}
 		}else if ($action == "update") {
-
+			
 			$result = $model->set($args);
 			if ($result["success"]) {
 				$inserted = $model->save();
@@ -529,7 +539,6 @@ $router->post("/api/article", function ($args) {
 			header("HTTP/1.0 404 Not Found");
 			header("Location: " . Router::route("404"));
 		}
-
 		exit();
 
 	}else {
@@ -541,25 +550,22 @@ $router->post("/api/article", function ($args) {
 });
 $router->post("/api/course", function ($args) {
 
-	include_once CLASS_PATH . "permissionscheck.php";
-	$request = PermissionsCheck::is_valid_api_request($args, ["create", "delete", "update"]);
-
-	if ($request["success"]) {// checks for token and admin request action
+	$actions = ["create", "update", "delete"];
+	if (Router::isset_session("admin") && isset($args["action"]) && in_array($args["action"], $actions)) {
 
 		include MODELS_PATH . "course.php";
-		
+
+		$admin = Admin::get_admin_session();
 		$model = new Course();
-		$action = $request["action"];
+		$action = $args["action"];
 		
 		if ($action == "create") {
 			
 			$result = $model->set($args);
-
 			if ($result["success"]) {
-
-				$inserted = $model->insert($request["id"]);
-				// $result = $admin->create_course($args);
-
+	
+				$inserted = $model->insert($admin->id);
+	
 				if ($inserted["success"]) {
 					header("Location: " . Router::route("dashboard/course/" . $inserted["id"]));
 					exit();
@@ -572,9 +578,9 @@ $router->post("/api/course", function ($args) {
 			Course::set_info_holder_session($result["info_holder"]);
 			header("Location: " . Router::route("dashboard/course/create"));
 			exit();
-
+	
 		}else if ($action == "update") {
-
+	
 			$result = $model->set($args);
 			
 			if ($result["success"]) {
@@ -583,45 +589,44 @@ $router->post("/api/course", function ($args) {
 			}else {
 				echo json_encode(["success" => false, "errors" => $result["errors"]]);
 			}
-
+	
 		}else if ($action == "delete") {
-
+	
 			if (isset($args["course_id"]) && is_numeric(intval($args["course_id"])) && intval($args["course_id"]) > 0) {
 				echo json_encode(Course::delete(intval($args["course_id"])));
 			}else {
 				echo json_encode(["success" => false]);
 			}
 			exit();
-
+	
 		}else {
 			header("HTTP/1.0 404 Not Found");
 			header("Location: " . Router::route("404"));
 		}
+
 	}else {
 		header("HTTP/1.0 404 Not Found");
 		header("Location: " . Router::route("404"));
+		exit();
 	}
+
 
 });
 $router->post("/api/user", function ($args) {
 
-	include_once CLASS_PATH . "permissionscheck.php";
-	$request = PermissionsCheck::is_valid_api_request($args, ["delete", "update"]);
-
-	if ($request["success"]) {// checks for token and admin request action
-
-		include MODELS_PATH . "user.php";
+	$actions = ["update", "delete"];
+	if (Router::isset_session("admin") && isset($args["action"]) && in_array($args["action"], $actions)) {
 		
-		$model = new User();
+		include MODELS_PATH . "user.php";
 		$action = $request["action"];
+		$model = new User();
 		
 		if ($action == "update") {
 
 			$result = $model->set_update($args);
 			
 			if ($result["success"]) {
-				$saved = $model->save();
-				echo json_encode($saved);
+				echo json_encode($model->save());
 			}else {
 				echo json_encode(["success" => false, "errors" => $result["errors"]]);
 			}
@@ -647,72 +652,67 @@ $router->post("/api/user", function ($args) {
 });
 $router->post("/api/upload/image", function ($args) {
 
-	$exts 			= ["image/jpeg", "image/png", "image/webp"];
-	$exts_name 	= ["jpeg", "jpg", "png", "webp"];
-	$name_arr 	=  explode(".", $args["image"]["name"]);
-	$ext 				= end($name_arr);
-	$error 			= [];
+	include_once CLASS_PATH . "formvalidate.php";
+	$res = Form::valid_image($args["image"]);
 
-	if (!in_array($args["image"]["type"], $exts)) {
-		$error[] = "file type is not allowed";
-	}
-	if (!in_array($ext, $exts_name)) {
-		$error[] = "file type is not allowed";
-	}
-	if (!(((intval($args["image"]["size"]) / 1024) / 1024) < 3)) {// size < 3MB
-		$error[] = "file size is too large (max = 3MB)";
-	}
-
-	if (count($error) > 0) {
-		echo json_encode([
-			"success" => 0,
-			"errors" => $error,
-		]);
+	if ($res["success"]) {
+		$uploaded = move_uploaded_file($res["info"]["tmp_name"], UPLOADS_IMAGES . $res["info"]["new_name"]);
+		echo json_encode(["success" => 1,"file" => ["url" => Router::route("uploads/img/" . $res["info"]["new_name"])]]);
 	}else {
-		include_once CLASS_PATH . "image.php";
-		$img_name = Image::generate_name(10) . "." . $ext;
-		$result = move_uploaded_file($args["image"]["tmp_name"], UPLOADS_IMAGES . $img_name);
-		echo json_encode([
-			"success" => 1,
-			"file" => [
-				"url" => Router::route("uploads/img/" . $img_name),
-			],
-		]);
+		echo json_encode($res);
 	}
+
 });
 $router->post("/api/fetch/image", function ($args) {
 
-	// $exts 			= ["image/jpeg", "image/png", "image/webp"];
-	// $exts_name 	= ["jpeg", "jpg", "png", "webp"];
-	// $name_arr 	=  explode(".", $args["image"]["name"]);
-	// $ext 				= end($name_arr);
-	// $error 			= [];
+	if (Router::isset_session("admin")) {
 
-	// if (!in_array($args["image"]["type"], $exts)) {
-	// 	$error[] = "file type is not allowed";
-	// }
-	// if (!in_array($ext, $exts_name)) {
-	// 	$error[] = "file type is not allowed";
-	// }
-	// if (!(((intval($args["image"]["size"]) / 1024) / 1024) < 3)) {// size < 3MB
-	// 	$error[] = "file size is too large (max = 3MB)";
-	// }
+		include_once CLASS_PATH . "image.php";
+		$request_body = file_get_contents('php://input');
+		$json_url = json_decode($request_body);
+		
+		$url_arr 				= explode("/", $json_url->url);
+		$file_name 			= end($url_arr);
+		$file_ext_arr 	= explode(".", $file_name);
+		$file_ext 			= end($file_ext_arr);
+		$exts_name 			= ["jpeg", "jpg", "png", "webp"];
+	
+		if (in_array($file_ext, $exts_name)) {
+	
+			$name = Image::generate_name(10) . "." . $file_ext;
+		
+			try {
 
-	// if (count($error) > 0) {
-	// 	echo json_encode([
-	// 		"success" => 0,
-	// 		"errors" => $error,
-	// 	]);
-	// }else {
-	// 	$img_name = Image::generate_name(10) . "." . $ext;
-	// 	$result = move_uploaded_file($args["image"]["tmp_name"], UPLOADS_IMAGES . $img_name);
-	// 	echo json_encode([
-	// 		"success" => 1,
-	// 		"file" => [
-	// 			"url" => Router::route("uploads/img/" . $img_name),
-	// 		],
-	// 	]);
-	// }
+				$ch = curl_init($json_url->url);
+				curl_setopt($ch, CURLOPT_HEADER, false);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+				$rawdata	=	curl_exec($ch);
+				curl_close($ch);
+				
+				$fp = fopen(UPLOADS_IMAGES . $name,'w');
+				fwrite($fp, $rawdata);
+				fclose($fp);
+
+				echo json_encode(["success" => 1, "file" => ["url" => Router::route("uploads/img/$name")]]);
+
+			} catch (\Throwable $th) {
+				echo $th;
+			}
+			
+		}else {
+			echo json_encode(["success" => 0]);
+		}
+
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route(""));
+		exit();
+	}
+
 });
 
 $router->add_404(function () {

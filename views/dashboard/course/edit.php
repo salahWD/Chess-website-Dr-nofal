@@ -1,6 +1,9 @@
 <form id="course" action="<?= Router::route("api/course");?>" method="POST">
-  <input type="hidden" name="token" value="<?= $token;?>">
   <div class="form row">
+    <div class="image">
+      <img id="image" src="<?= Router::route("uploads/img/$course->image");?>" alt="user image">
+      <button type="button" id="change-image" class="change-image btn btn-circle btn-primary"><i class="fa-solid fa-camera"></i></button>
+    </div>
     <div class="info">
       <div class="item date">
         <span class="icon">

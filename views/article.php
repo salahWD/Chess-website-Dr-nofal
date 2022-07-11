@@ -11,24 +11,35 @@
 <section class="article">
   <div class="container">
     <div class="image">
-      <img src="<?php echo Router::route("img/") . $article->image;?>" alt="article image">
+      <img src="<?php echo Router::route("uploads/img/") . $article->image;?>" alt="article image">
     </div>
     <div class="content">
-      <pre>
-        </pre>
-        <?php $content = json_decode($article->content);?>
-        <?php foreach($content->blocks as $block):?>
+      <?php $content = json_decode($article->content);?>
+      <?php foreach($content->blocks as $block):?>
         <?php if ($block->type == "paragraph"):?>
           <p><?= $block->data->text;?></p>
         <?php elseif ($block->type == "header"):?>
           <h<?= $block->data->level;?>><?= $block->data->text;?></h<?= $block->data->level;?>>
         <?php elseif ($block->type == "image"):?>
-          <img src="<?= $block->data->file->url;?>" alt="<?= $block->data->file->caption;?>">
+          <figure class="<?= $block->data->stretched ? "stretched": "";?>">
+            <img src="<?= $block->data->file->url;?>" alt="<?= $block->data->caption;?>">
+            <figcaption><?= $block->data->caption;?>asdasd</figcaption>
+          </figure>
         <?php endif;?>
       <?php endforeach;?>
-      <?php //echo $article->content;?>
     </div>
     <hr class="divider end">
+    <div class="article-actions">
+      <h3 class="title">do you like this article ?</h3>
+      <div class="likes">
+        <span class="number"><?= $article->likes;?></span>
+        <?php if ($article->is_liked):?>
+          <button id="like-btn" class="btn like btn-transparent active"><i class="icon fa-solid fa-heart"></i></button>
+        <?php else:?>
+          <button id="like-btn" class="btn like btn-transparent"><i class="icon fa-regular fa-heart"></i></button>
+        <?php endif;?>
+      </div>
+    </div>
     <div class="article-info">
       <p class="tags">
         Tags: 
@@ -67,11 +78,16 @@
           </div>
         </form>
       <?php else:?>
-        login
+        <div class="input-holder">
+          <div class="body">
+            <textarea disabled name="comment" id="comment" placeholder="Login To Comment"></textarea>
+            <a class="btn btn-warning login-btn" href="<?= Router::route("login");?>" class="btn btn-warning">Login</a>
+          </div>
+        </div>
       <?php endif;?>
-      <hr class="divider end">
-      <?php if (isset($comments) && !empty($comments) && is_array($comments)):?>
-        <div class="comments-container" id="comments">
+      <hr class="divider end" style="margin-top: 20px!important; ">
+      <div class="comments-container" id="comments">
+        <?php if (isset($comments) && !empty($comments) && is_array($comments)):?>
           <?php foreach ($comments as $comment):?>
             <div class="comment">
               <input type="hidden" class="id" value="<?= $comment->id;?>">
@@ -83,7 +99,11 @@
                 <div class="text"><?= $comment->comment;?></div>
               </div>
               <div class="actions">
-                <button title="reply" class="btn btn-transparent reply reply-btn"><i class="fa-solid fa-reply"></i> reply</button>
+                <?php if (isset($user) && !empty($user)):?>
+                  <button title="reply" class="btn btn-transparent reply reply-btn"><i class="fa-solid fa-reply"></i> reply</button>
+                <?php else:?>
+                    <a href="<?= Router::route("login");?>" class="btn login-btn btn-transparent reply"><i class="fa-solid fa-reply"></i> login to reply</a>
+                <?php endif;?>
                 <?php if ($comment->replies_count > 0):?>
                   <button title="show replies" class="btn btn-transparent show-replies-btn">view replies (<span class="number"><?= $comment->replies_count;?></span>)</button>
                   <?php else:?>
@@ -93,8 +113,8 @@
               </div>
             </div>
           <?php endforeach;?>
-        </div>
-      <?php endif;?>
+        <?php endif;?>
+      </div>
     </div>
   </div>
 </section>
