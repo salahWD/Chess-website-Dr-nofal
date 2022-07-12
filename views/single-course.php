@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="image animate__animated" data-animation="animate__fadeInDown">
-        <img src="<?php echo Router::route("img/") . $course->image;?>" alt="chess course image">
+        <img src="<?php echo Router::route("uploads/img/$course->image");?>" alt="chess course image">
       </div>
       <div class="description animate__delay-02 animate__animated" data-animation="animate__fadeInLeft">
         <h3 class="title">Course Description</h3>

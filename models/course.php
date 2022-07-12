@@ -249,10 +249,6 @@ class Course {
     return ["success" => $res];
   }
 
-  public function get_img_url() {
-    return IMG_URL . $this->image;
-  }
-
 
 }
 

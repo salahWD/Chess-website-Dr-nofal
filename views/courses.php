@@ -21,7 +21,7 @@
         <?php foreach($courses as $i => $course):?>
           <div class="course animate__animated" data-animation="animate__<?php echo $class[$i % 3];?>">
             <div class="course-img">
-              <img src="<?php echo $course->get_img_url();?>" title="course name goes here" alt="chess course image">
+              <img src="<?= Router::route("uploads/img/") . $course->image;?>" title="course name goes here" alt="chess course image">
               <span class="price">
                 <h3 class="number">$<?php echo $course->price;?></h3>
               </span>

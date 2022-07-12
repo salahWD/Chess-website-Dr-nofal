@@ -32,6 +32,30 @@ $router->get("/course/{id}", function ($params) {// params => [$_POST, $_GET, [$
 		exit();
 	}
 });
+$router->get("/lecture/{param}", function ($params) {
+	include_once MODELS_PATH . "lecture.php";
+	
+	if (Router::isset_session("user")) {
+		include_once MODELS_PATH . "user.php";
+		
+		$user = Router::get_user();
+		$lecture = Lecture::get_lecture_title($params["param"]);
+	
+		if (!empty($lecture) && get_class($lecture) == "Lecture") {
+			Template::view("lecture", 3, ["custom_style" => "lecture.css", "lecture" => $lecture]);
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
+			exit();
+		}
+		
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("location: " . Router::route("404"));
+		exit();
+	}
+
+});
 $router->get("/blog", function () {
 	
 	include_once MODELS_PATH . "blog.php";
@@ -700,7 +724,7 @@ $router->post("/api/fetch/image", function ($args) {
 				echo json_encode(["success" => 1, "file" => ["url" => Router::route("uploads/img/$name")]]);
 
 			} catch (\Throwable $th) {
-				echo $th;
+				echo json_encode(["success" => 0]);
 			}
 			
 		}else {
