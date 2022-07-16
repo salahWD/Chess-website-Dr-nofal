@@ -94,6 +94,9 @@ iframe.seamless {
 .btn-big {
   padding: 20px 40px;
 }
+.btn-block {
+  width: 100%;
+}
 .btn, .btn:focus, .btn:active {
   outline: 0 !important;
   box-shadow: none !important;

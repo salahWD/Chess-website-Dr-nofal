@@ -15,9 +15,9 @@
           <p class="desc"><?php echo substr($course->description, 0, 45);?></p>
         </div>
         <div class="profile animate__animated" data-animation="animate__fadeInRight">
-          <img src="<?php echo Router::route("img/coach-profile.png");?>" alt="coach profile image">
+          <img src="<?php echo Router::route("uploads/img/" . $course->creator_image);?>" alt="coach profile image">
           <div class="info">
-            <h4 class="name cap">Dr.Mohamed Nofal</h4>
+            <h4 class="name cap"><?= $course->creator_name;?></h4>
             <div class="rate animate__animated" data-animation="animate__fadeInRight">
               <span class="number">4.9</span>
               <div class="stars">
@@ -69,13 +69,14 @@
         <h2 class="title c-p">$<?php echo $course->price;?> <span class="month">/ Month</span></h2>
         <hr class="divider">
         <ul class="features-list list-unstyled">
-          <li><i class="c-p fas fa-user"></i> Mentor : Queen Rose</li>
-          <li><i class="c-p fas fa-clock"></i> Duration : 2 Hours / Meeting</li>
+          <li><i class="c-p fas fa-user"></i> Mentor : <span><?= $course->creator_name;?></span></li>
+          <li><i class="c-p fas fa-clock"></i> Duration : 2 Hours / Videos</li>
           <li><i class="c-p fas fa-sort-amount-up-alt"></i> Level : Beginner</li>
           <li><i class="c-p fas fa-award"></i> Award : Certification</li>
+          <li><i class="c-p fas fa-eye"></i> Lectures : <span><?= $course->lectures;?></span></li>
           <li><i class="c-p fas fa-eye"></i> Format : Off-Line</li>
         </ul>
-        <a target="_blank" href="https://wa.me/+201016976250?text=hi i want to join <?php echo $course->title;?> course wich cost <?php echo $course->price;?>$" class="btn btn-warning">Join Now</a>
+        <a href="<?= Router::route("enroll/" . $course->id);?>" class="btn btn-warning">Enroll Now</a>
       </div>
       <div class="more-courses background animate__delay-02 animate__animated" data-animation="animate__fadeInRight">
         <div class="overlay"></div>

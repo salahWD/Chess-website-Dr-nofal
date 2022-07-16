@@ -9,14 +9,31 @@ class Course {
   public $date;
   public $active;
   public $duration;
+  public $lectures;
+  public $creator_id;
+  public $creator_name;
+  public $creator_image;
   public $image = "course-dafault.jpg";
   private $image_uploaded = false;
 
-  public static function get_active_course(int $id) {
+  public static function get_course_title($url_title) {
     $db = DB::get_instance();
-    $sql = $db->prepare("SELECT * FROM courses WHERE courses.id = ? AND courses.active = 1");
-    $result = $sql->execute([$id]);
-    return $sql->rowCount() > 0 ? $sql->fetchObject("Course"): false;
+    $sql = $db->prepare(
+      "SELECT C.*, A.name AS creator_name, A.id AS creator_id, A.image AS creator_image, COUNT(L.id) AS lectures FROM courses C
+      INNER JOIN admins A ON A.id = C.creator
+      LEFT JOIN lectures L ON L.course = C.id
+      WHERE C.url_title = ? AND C.active = 1 AND L.active = 1");
+    $result = $sql->execute([$url_title]);
+    if ($sql->rowCount() > 0) {
+      $course = $sql->fetchObject("Course");
+      if (!empty($course->id)) {
+        return $course;
+      }else {
+        return false;
+      }
+    }else {
+      return false;
+    }
   }
 
   public static function get_course(int $id) {
@@ -39,49 +56,120 @@ class Course {
     $result = $sql->execute();
     return $sql->rowCount() > 0 ? $sql->fetchAll(PDO::FETCH_CLASS, "Course"): false;
   }
-
-  public static function get_errors_session() {
-    $errors = null;
-    if (isset($_SESSION["course/errors"])) {
-      $errors = $_SESSION["course/errors"];
-      unset($_SESSION["course/errors"]);
-    }
-    if ($errors != null && is_array($errors) && count($errors) > 0) {
-      return $errors;
+  
+  public static function get_lectures($id) {
+    $db = DB::get_instance();
+    $sql = $db->prepare("SELECT * FROM lectures WHERE course = ? AND active = 1 ORDER BY lectures.order");
+    $result = $sql->execute([$id]);
+    if ($sql->rowCount() > 0) {
+      include_once MODELS_PATH . "lecture.php";
+      return $sql->fetchAll(PDO::FETCH_CLASS, "Lecture");
     }else {
-      return null;
+      return false;
     }
-  }
-
-  public static function set_errors_session($data) {
-    if (!isset($_SESSION)) {
-      session_start();
-    }
-    if (isset($_SESSION["course/errors"])) {
-      unset($_SESSION["course/errors"]);
-    }
-    $_SESSION["course/errors"] = $data;
-    return true;
   }
   
-  public static function get_info_holder_session() {
-    $info = null;
-    if (isset($_SESSION["course/info"])) {
-      $info = $_SESSION["course/info"];
-      unset($_SESSION["course/info"]);
+  public static function get_price($id) {
+    $db = DB::get_instance();
+    $sql = $db->prepare("SELECT price FROM courses WHERE id = ?");
+    $result = $sql->execute([$id]);
+    if ($sql->rowCount() > 0) {
+      return $sql->fetch(PDO::FETCH_ASSOC)["price"];
+    }else {
+      return false;
     }
-    if ($info != null && is_array($info) && count($info) > 0) {
+  }
+  
+  public static function get_lectures_watched($user, $id) {
+    $db = DB::get_instance();
+    $sql = $db->prepare(
+      "SELECT L.id FROM lectures L
+      INNER JOIN lectures_done LD ON LD.lecture = L.id
+      WHERE L.course = ? AND L.active = 1 AND LD.user = ?");
+    $result = $sql->execute([$id, $user]);
+    if ($sql->rowCount() > 0) {
+      return array_column($sql->fetchAll(PDO::FETCH_ASSOC), "id");
+    }else {
+      return [];
+    }
+  }
+
+  public static function is_enrolled(int $user, int $id) {
+    $db = DB::get_instance();
+
+    $sql = $db->prepare("SELECT id FROM lectures_done WHERE user = ? AND course = ? AND lecture IS NULL");
+    $result = $sql->execute([$user, $id]);
+  
+    return $sql->rowCount() > 0;
+
+  }
+
+  public static function free_enroll(int $id) {
+    $db = DB::get_instance();
+    $sql = $db->prepare("SELECT price FROM courses WHERE id = ?");
+    $result = $sql->execute([$id]);
+
+    $price = $sql->fetch(PDO::FETCH_ASSOC)["price"];
+    return intval($price) === 0 || empty($price);
+
+  }
+
+  public static function enroll(int $user, int $id) {
+    $db = DB::get_instance();
+
+    $sql = $db->prepare("INSERT INTO lectures_done (user, course) VALUES (?, ?)");
+    $result = $sql->execute([$user, $id]);
+    return $result;
+
+  }
+
+  public static function isset_course_id(int $id) {
+    $db = DB::get_instance();
+    $sql = $db->prepare("SELECT url_title FROM courses WHERE id = ?");
+    $result = $sql->execute([$id]);
+
+    if ($sql->rowCount() > 0) {
+      return $sql->fetch(PDO::FETCH_ASSOC)["url_title"];
+    }else {
+      return false;
+    }
+
+  }
+
+  public static function isset_course_title($url_title) {
+    $db = DB::get_instance();
+    $sql = $db->prepare("SELECT id FROM courses WHERE url_title = ?");
+    $result = $sql->execute([$url_title]);
+
+    if ($sql->rowCount() > 0) {
+      return $sql->fetch(PDO::FETCH_ASSOC)["id"];
+    }else {
+      return false;
+    }
+
+  }
+
+  public static function get_session($select) {
+    $info = null;
+    if (isset($_SESSION["course/$select"])) {
+      $info = $_SESSION["course/$select"];
+      unset($_SESSION["course/$select"]);
+    }
+    if ($errors != null && is_array($errors) && count($errors) > 0) {
       return $info;
     }else {
       return null;
     }
   }
 
-  public static function set_info_holder_session($data) {
-    if (isset($_SESSION["course/info"])) {
-      unset($_SESSION["course/info"]);
+  public static function set_session($name, $data) {
+    if (!isset($_SESSION)) {
+      session_start();
     }
-    $_SESSION["course/info"] = $data;
+    if (isset($_SESSION["course/$name"])) {
+      unset($_SESSION["course/$name"]);
+    }
+    $_SESSION["course/$name"] = $data;
     return true;
   }
 

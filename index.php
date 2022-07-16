@@ -19,42 +19,18 @@ $router->get("/courses", function () {
 	
 	Template::view("courses", 3, ["custom_style" => "courses.css", "courses" => $courses]);
 });
-$router->get("/course/{id}", function ($params) {// params => [$_POST, $_GET, [$id == {id}]]
+$router->get("/course/{param}", function ($params) {// params => [$_POST, $_GET, [$id == {id}]]
 
 	include_once MODELS_PATH . "course.php";
 	$model = new Course();
-	$course = Course::get_active_course($params['id']);
-	
-	if ($course !== false) {
+	$course = Course::get_course_title($params['param']);
+
+	if ($course != false) {
 		Template::view("single-course", 3, ["custom_style" => "single-course.css", "course" => $course]);
 	}else {
 		header("Location: " . Router::route("404"));
 		exit();
 	}
-});
-$router->get("/lecture/{param}", function ($params) {
-	include_once MODELS_PATH . "lecture.php";
-	
-	if (Router::isset_session("user")) {
-		include_once MODELS_PATH . "user.php";
-		
-		$user = Router::get_user();
-		$lecture = Lecture::get_lecture_title($params["param"]);
-	
-		if (!empty($lecture) && get_class($lecture) == "Lecture") {
-			Template::view("lecture", 3, ["custom_style" => "lecture.css", "lecture" => $lecture]);
-		}else {
-			header("HTTP/1.0 404 Not Found");
-			header("Location: " . Router::route("404"));
-			exit();
-		}
-		
-	}else {
-		header("HTTP/1.0 404 Not Found");
-		header("location: " . Router::route("404"));
-		exit();
-	}
-
 });
 $router->get("/blog", function () {
 	
@@ -117,6 +93,88 @@ $router->get("/login", function () {
 	}
 
 });
+$router->get("/lecture/{param}", function ($params) {
+	
+	if (Router::isset_session("user")) {
+		include_once MODELS_PATH . "lecture.php";
+		include_once MODELS_PATH . "user.php";
+		include_once MODELS_PATH . "course.php";
+		
+		$user	= Router::get_user();
+
+		if ($course = Lecture::isset_lecture_title($params["param"])) {
+			if (Course::is_enrolled($user->id, $course["id"])) {
+
+				$lecture 				= Lecture::get_lecture_title($params["param"]);
+				$progress_info 	= Lecture::get_progress_info($lecture->id);
+				$watched				= Lecture::get_watched_lectures($user->id, $lecture->course);
+				Template::view("lecture", 3, [
+					"custom_style" => ["lecture.css", "lib/video-player.css"],
+					"custom_script" => "video-player",
+					"lecture" => $lecture,
+					"progress_info" => $progress_info,
+					"watched" => $watched,
+				]);
+		
+			}else {
+				header("Location: " . Router::route("course/" . $course["url_title"]));
+				exit();
+			}
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
+			exit();
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("location: " . Router::route("404"));
+		exit();
+	}
+
+});
+$router->get("/course_map/{param}", function ($params) {
+
+	if (Router::isset_session("user")) {
+
+		include_once MODELS_PATH . "user.php";
+		include_once MODELS_PATH . "course.php";
+		$user = Router::get_user();
+
+		if ($id = Course::isset_course_title($params["param"])) {
+			if (Course::is_enrolled($user->id, $id)) {
+				
+				$course = Course::get_course_title($params["param"]);
+
+				if (!empty($course)) {
+					$lectures = Course::get_lectures($course->id);// get lectures for maping them
+					$watched 	= Course::get_lectures_watched($user->id, $course->id);
+					Template::view("course_map", 3, [
+						"custom_style" => "course_map.css",
+						"course" => $course,
+						"lectures" => $lectures,
+						"watched" => $watched,
+					]);
+				}else {
+					header("HTTP/1.0 404 Not Found");
+					header("Location: " . Router::route("404"));
+					exit();
+				}
+			}else {
+				header("location: " . Router::route("course/" . $params["param"]));
+				exit();
+			}
+		}else {
+			header("HTTP/1.0 404 Not Found");
+			header("location: " . Router::route("404"));
+			exit();
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("location: " . Router::route("404"));
+		exit();
+	}
+
+});
 $router->get("/user/profile", function () {
 	include_once MODELS_PATH . "user.php";
 
@@ -134,6 +192,99 @@ $router->get("/user/profile", function () {
 		header("location: " . Router::route("404"));
 		exit();
 	}
+
+});
+$router->get("/pay/course/{id}", function ($args) {
+	
+	if (Router::isset_session("user")) {
+
+		include_once MODELS_PATH . "user.php";
+		$course_id = filter_var($args["id"], FILTER_SANITIZE_NUMBER_INT, ["options" => ["min_range" => 1]]);
+		
+		if ($course_id) {
+		
+			include_once MODELS_PATH . "course.php";
+
+			if ($url_title = Course::isset_course_id($course_id)) {
+
+				$price = Course::get_price($course_id);
+
+				include_once "./pay.conf.php";
+		
+				try {
+					$response = $gateway->purchase(array(
+						'amount' => $price,
+						'currency' => PAYPAL_CURRENCY,
+						'returnUrl' => PAYPAL_RETURN_URL,
+						'cancelUrl' => PAYPAL_CANCEL_URL,
+					))->send();
+			
+					if ($response->isRedirect()) {
+						$response->redirect(); // this will automatically forward the customer
+					} else {
+						// not successful
+						echo $response->getMessage();
+					}
+				} catch(Exception $e) {
+					echo $e->getMessage();
+				}
+
+			}else {
+				header("Location: " . Router::route("courses"));
+				exit();
+			}
+		}else {
+			header("Location: " . Router::route("courses"));
+			exit();
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("404"));
+	}
+
+});
+$router->get("/pay/succeed", function () {
+
+	require_once 'config.php';
+	
+	if (array_key_exists('paymentId', $_GET) && array_key_exists('PayerID', $_GET)) {
+		include_once MODELS_PATH . 'payment.php';
+
+		$transaction = $gateway->completePurchase(array(
+			'payer_id'             => $_GET['PayerID'],
+			'transactionReference' => $_GET['paymentId'],
+		));
+		$response = $transaction->send();
+	
+		if ($response->isSuccessful()) {
+				// The customer has successfully paid.
+			$arr_body = $response->getData();
+
+			$payment_info = [
+				"payment_id"			=> $arr_body['id'],
+				"payer_id" 				=> $arr_body['payer']['payer_info']['payer_id'],
+				"payer_email" 		=> $arr_body['payer']['payer_info']['email'],
+				"amount" 					=> $arr_body['transactions'][0]['amount']['total'],
+				"currency" 				=> PAYPAL_CURRENCY,
+				"payment_status" 	=> $arr_body['state'],
+			];
+
+			Payment::insert_payment($payment_info);
+// finish insert payment into paments table and check payment circle and debug it
+			// $sql = $db->prepare("INSERT INTO payments(payment_id, payer_id, payer_email, price, currency, payment_status) VALUES(?, '". $payer_id ."', '". $payer_email ."', '". $amount ."', '". $currency ."', '". $payment_status ."')");
+			
+			echo "Payment is successful. Your transaction id is: ". $payment_id;
+		} else {
+			echo $response->getMessage();
+		}
+	} else {
+			echo 'Transaction is declined';
+	}
+
+});
+$router->get("/pay/failed", function () {
+
+	echo "<h1>failed</h1>";
 
 });
 $router->get_admin("/dashboard", function () {
@@ -216,8 +367,8 @@ $router->get_admin("/dashboard/course/create", function ($args) {
 	include_once MODELS_PATH . "admin.php";
 	include_once MODELS_PATH . "course.php";
 
-	$errors 	= Course::get_errors_session();
-	$info 		= Course::get_info_holder_session();
+	$errors 	= Course::get_session("errors");
+	$info 		= Course::get_session("info_holder");
 
 	Template::admin_view("dashboard/course/create", 3, [
 		"custom_style" => "dashboard.css",
@@ -365,6 +516,46 @@ $router->post("/user/profile", function ($args) {
 			Router::set_session("user/errors", $res["errors"]);
 			header("Location: " . Router::route("user/profile"));
 			exit();
+		}
+	}else {
+		header("HTTP/1.0 404 Not Found");
+		header("Location: " . Router::route("login"));
+		exit();
+	}
+	
+});
+$router->get("/enroll/{id}", function ($args) {
+	
+	include_once MODELS_PATH . "user.php";
+	include_once MODELS_PATH . "course.php";
+
+	if (Router::isset_session("user")) {
+		$user = Router::get_user();
+
+		$id = isset($args["id"]) ? intval($args["id"]) : null;
+
+		if (is_numeric($id) && $id > 0) {
+			if ($url_title = Course::isset_course_id($id)) {
+				if (!Course::is_enrolled($user->id, $id)) {
+					if (Course::free_enroll($id)) {
+						Course::enroll($user->id, $id);
+					}else {
+						header("Location: " . Router::route("pay/course"));
+						exit();
+					}
+				}
+				header("location: " . Router::route("course_map/" . $url_title));
+				exit();
+			
+			}else {
+				exit();
+				header("HTTP/1.0 404 Not Found");
+				header("Location: " . Router::route("404"));
+			}
+		}else {
+			exit();
+			header("HTTP/1.0 404 Not Found");
+			header("Location: " . Router::route("404"));
 		}
 	}else {
 		header("HTTP/1.0 404 Not Found");
@@ -594,12 +785,12 @@ $router->post("/api/course", function ($args) {
 					header("Location: " . Router::route("dashboard/course/" . $inserted["id"]));
 					exit();
 				}else {
-					Course::set_errors_session($inserted["error"]);
+					Course::set_session("errors", $inserted["error"]);
 				}
 			}else {
-				Course::set_errors_session($result["errors"]);
+				Course::set_session("errors", $result["errors"]);
 			}
-			Course::set_info_holder_session($result["info_holder"]);
+			Course::set_session("info_holder", $result["info_holder"]);
 			header("Location: " . Router::route("dashboard/course/create"));
 			exit();
 	

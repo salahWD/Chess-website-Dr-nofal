@@ -4,6 +4,10 @@
 <!-- swiper lib -->
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <!-- custom lib -->
-<script src="<?php echo JS_URL;?>/script.js"></script>
+<script src="<?= JS_URL;?>/script.js"></script>
+<!-- custom script -->
+<?php if (isset($custom_script) && !empty($custom_script)):?>
+  <script src="<?= JS_URL;?>/<?= $custom_script;?>.js"></script>
+<?php endif;?>
 </body>
 </html>

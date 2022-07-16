@@ -23,7 +23,7 @@
             <div class="course-img">
               <img src="<?= Router::route("uploads/img/") . $course->image;?>" title="course name goes here" alt="chess course image">
               <span class="price">
-                <h3 class="number">$<?php echo $course->price;?></h3>
+                <h3 class="number"><?= intval($course->price) > 0 ? "$" . intval($course->price): "Free";?></h3>
               </span>
             </div>
             <div class="course-info">
@@ -54,7 +54,7 @@
                     <?php endfor;?>
                   </div>
                 </div>
-                <a href="<?php echo MASTER_URL . "course/$course->id";?>" class="btn btn-warning">Join Now</a>
+                <a href="<?php echo MASTER_URL . "course/$course->url_title";?>" class="btn btn-warning">Join Now</a>
               </div>
             </div>
           </div>

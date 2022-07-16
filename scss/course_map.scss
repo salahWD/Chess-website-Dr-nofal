@@ -1,0 +1,114 @@
+@use "./utils/header";
+@use "./utils/pages-header";
+section.header {
+  background-image: url("../img/courses-page.jpg");
+}
+section.lecture {
+  padding: 60px 0 110px;
+  .text {
+    margin-bottom: 60px;
+    .desc {
+      margin: auto;
+    }
+  }
+  .lectures {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 30px 25px;
+    .lecture {
+      max-width: calc((100% / 3) - (50px / 3));
+      flex-basis: calc((100% / 3) - (50px / 3));
+      color: var(--global-color-black);
+      transition: 0.3s ease-out;
+      border: 1px solid #eee;
+      text-decoration: none;
+      border-radius: 10px;
+      overflow: hidden;
+      .image {
+        aspect-ratio: 1.6 / 1;
+        position: relative;
+        width: 100%;
+        .number {
+          background-color: var(--global-color-primary);
+          font-family: var(--global-font-sec);
+          color: var(--global-color-black);
+          transform: translateY(-50%);
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          border-radius: 50%;
+          font-size: 22px;
+          display: flex;
+          height: 50px;
+          width: 50px;
+          left: 15px;
+          top: 15px;
+        }
+        img {
+          box-shadow: 0 0px 6px #ccc;
+          object-position: center center;
+          object-fit: cover;
+          height: 100%;
+          width: 100%;
+        }
+      }
+      .body {
+        box-sizing: content-box;
+        padding: 22px 18px;
+        .title {
+          margin: 0 0 16px;
+          font-size: 28px;
+          max-width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        .desc {
+          color: var(--global-color-text);
+          margin: 0 0 18px;
+          line-height: 1.5;
+          min-height: 50px;
+        }
+        .date {
+          color: var(--global-color-text);
+          margin: 0;
+        }
+        .btn {
+          margin: 16px 0 0;
+          border-radius: 8px;
+        }
+      }
+      &:not(.active) {
+        .btn {
+          background-color: var(--global-color-text);
+        }
+        .image {
+          img {
+            filter: grayscale(0);
+          }
+          .number {
+            background-color: var(--global-color-text);
+            box-shadow: 0 0 5px var(--global-color-text-dark);
+          }
+        }
+      }
+      &.active {
+        border-color: var(--global-color-primary);
+        .body {
+          .title {
+            color: var(--global-color-primary);
+          }
+        }
+      }
+      &.current {
+        box-shadow: 0 0 5px var(--global-color-primary);
+      }
+      &:hover {
+        transform: translateY(-20px);
+        border-color: var(--global-color-primary);
+        box-shadow: 0 0 5px var(--global-color-primary);
+      }
+    }
+  }
+}

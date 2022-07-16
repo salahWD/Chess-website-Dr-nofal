@@ -17,7 +17,13 @@
 	<link rel="stylesheet" href="<?php echo CSS_URL;?>lib/custom-lib.css">
 	<link rel="stylesheet" href="<?php echo CSS_URL;?>lib/global.css">
 	<?php if (isset($custom_style) && !empty($custom_style)):?>
-		<link rel="stylesheet" href="<?php echo CSS_URL . $custom_style;?>">
+		<?php if (is_array($custom_style)):?>
+			<?php foreach ($custom_style as $style):?>
+				<link rel="stylesheet" href="<?php echo CSS_URL . $style;?>">
+			<?php endforeach;?>
+		<?php else:?>
+			<link rel="stylesheet" href="<?php echo CSS_URL . $custom_style;?>">
+		<?php endif;?>
 	<?php endif;?>
 </head>
 <body>
